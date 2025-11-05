@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Plus } from "lucide-react"
 import { SendNotificationDialog } from "@/components/send-notification-dialog"
+import { CopyButton } from "@/components/copy-button"
 
 export default function NotificationsPage() {
   const { data: notificationsData, isLoading } = useNotifications()
@@ -17,7 +18,7 @@ export default function NotificationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Notifications</h2>
+          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Notifications</h2>
           <p className="text-muted-foreground">Gérez et envoyez des notifications aux utilisateurs</p>
         </div>
         <Button onClick={() => setDialogOpen(true)}>
@@ -26,47 +27,63 @@ export default function NotificationsPage() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Liste des Notifications</CardTitle>
-          <CardDescription>Total : {notificationsData?.count || 0} notifications</CardDescription>
+      <Card className="border border-border/50 shadow-sm">
+        <CardHeader className="border-b border-border/50 bg-muted/30">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg font-semibold">Liste des Notifications</CardTitle>
+              <CardDescription className="text-sm mt-1">Total : {notificationsData?.count || 0} notifications</CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : notificationsData && notificationsData.results.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Titre</TableHead>
-                  <TableHead>Contenu</TableHead>
-                  <TableHead>ID Utilisateur</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Créé le</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {notificationsData.results.map((notification) => (
-                  <TableRow key={notification.id}>
-                    <TableCell className="font-medium">{notification.id}</TableCell>
-                    <TableCell className="font-medium">{notification.title}</TableCell>
-                    <TableCell className="max-w-md truncate">{notification.content}</TableCell>
-                    <TableCell className="font-mono text-xs">{notification.user}</TableCell>
-                    <TableCell>
-                      <Badge variant={notification.is_read ? "secondary" : "default"}>
-                        {notification.is_read ? "Read" : "Unread"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{new Date(notification.created_at).toLocaleDateString()}</TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border/50">
+                    <TableHead className="font-semibold text-muted-foreground h-12">ID</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Titre</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Contenu</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">ID Utilisateur</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Statut</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Créé le</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {notificationsData.results.map((notification, index) => (
+                    <TableRow key={notification.id} className={index % 2 === 0 ? "bg-card" : "bg-muted/20"}>
+                      <TableCell className="font-medium text-foreground">
+                        <div className="flex items-center gap-2">
+                          {notification.id}
+                          <CopyButton value={notification.id} />
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-semibold text-foreground">{notification.title}</TableCell>
+                      <TableCell className="max-w-md truncate text-muted-foreground">{notification.content}</TableCell>
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          {notification.user}
+                          <CopyButton value={notification.user} />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={notification.is_read ? "secondary" : "default"} className="font-medium">
+                          {notification.is_read ? "Lu" : "Non lu"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-sm">{new Date(notification.created_at).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">Aucune notification trouvée</div>
+            <div className="text-center py-12 text-muted-foreground">Aucune notification trouvée</div>
           )}
         </CardContent>
       </Card>

@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Plus, Pencil, Trash2 } from "lucide-react"
 import { TelephoneDialog } from "@/components/telephone-dialog"
+import { CopyButton } from "@/components/copy-button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -64,7 +65,7 @@ export default function TelephonesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Téléphones</h2>
+          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Téléphones</h2>
           <p className="text-muted-foreground">Gérez les numéros de téléphone des utilisateurs</p>
         </div>
         <Button onClick={handleCreate}>
@@ -98,9 +99,17 @@ export default function TelephonesPage() {
               <TableBody>
                 {telephones.map((telephone) => (
                   <TableRow key={telephone.id}>
-                    <TableCell className="font-medium">{telephone.id}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {telephone.id}
+                        <CopyButton value={telephone.id} />
+                      </div>
+                    </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{telephone.phone}</Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{telephone.phone}</Badge>
+                        <CopyButton value={telephone.phone} />
+                      </div>
                     </TableCell>
                     <TableCell>{getNetworkName(telephone.network)}</TableCell>
                     <TableCell>{telephone.telegram_user || "-"}</TableCell>

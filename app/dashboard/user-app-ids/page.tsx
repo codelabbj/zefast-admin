@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Plus, Pencil, Trash2 } from "lucide-react"
 import { UserAppIdDialog } from "@/components/user-app-id-dialog"
+import { CopyButton } from "@/components/copy-button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,7 +59,7 @@ export default function UserAppIdsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">IDs Utilisateur App</h2>
+          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">IDs Utilisateur App</h2>
           <p className="text-muted-foreground">Gérez les identifiants d'application utilisateur</p>
         </div>
         <Button onClick={handleCreate}>
@@ -92,9 +93,17 @@ export default function UserAppIdsPage() {
               <TableBody>
                 {userAppIds.map((userAppId) => (
                   <TableRow key={userAppId.id}>
-                    <TableCell className="font-medium">{userAppId.id}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {userAppId.id}
+                        <CopyButton value={userAppId.id} />
+                      </div>
+                    </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{userAppId.user_app_id}</Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{userAppId.user_app_id}</Badge>
+                        <CopyButton value={userAppId.user_app_id} />
+                      </div>
                     </TableCell>
                     <TableCell className="font-mono text-xs">{userAppId.app_name}</TableCell>
                     <TableCell>{userAppId.telegram_user || "-"}</TableCell>

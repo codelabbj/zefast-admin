@@ -58,7 +58,7 @@ export default function NetworksPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Réseaux</h2>
+          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Réseaux</h2>
           <p className="text-muted-foreground">Gérez les réseaux de paiement</p>
         </div>
         <Button onClick={handleCreate}>

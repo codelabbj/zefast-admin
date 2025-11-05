@@ -14,8 +14,14 @@ function detectLang(text: string): "fr" | "en" {
 }
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token")
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  // Don't add token to login/auth endpoints
+  const isAuthEndpoint = config.url?.includes('/auth/login') || config.url?.includes('/auth/token/refresh')
+  
+  if (!isAuthEndpoint) {
+    const token = localStorage.getItem("access_token")
+    if (token) config.headers.Authorization = `Bearer ${token}`
+  }
+  
   return config
 })
 

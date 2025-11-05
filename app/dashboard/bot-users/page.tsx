@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Search } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { CopyButton } from "@/components/copy-button"
 
 export default function BotUsersPage() {
   const [search, setSearch] = useState("")
@@ -24,16 +25,16 @@ export default function BotUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Utilisateurs Bot</h2>
-        <p className="text-muted-foreground">Gérez les utilisateurs du bot Telegram</p>
+        <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Utilisateurs Bot</h2>
+        <p className="text-muted-foreground mt-2">Gérez les utilisateurs du bot Telegram</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Filtres</CardTitle>
-          <CardDescription>Rechercher et filtrer les utilisateurs bot</CardDescription>
+      <Card className="border border-border/50 shadow-sm">
+        <CardHeader className="border-b border-border/50 bg-muted/30">
+          <CardTitle className="text-lg font-semibold">Filtres</CardTitle>
+          <CardDescription className="text-sm">Rechercher et filtrer les utilisateurs bot</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="search">Rechercher</Label>
@@ -65,45 +66,59 @@ export default function BotUsersPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Liste des Utilisateurs</CardTitle>
-          <CardDescription>Total : {users?.length || 0} utilisateurs</CardDescription>
+      <Card className="border border-border/50 shadow-sm">
+        <CardHeader className="border-b border-border/50 bg-muted/30">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg font-semibold">Liste des Utilisateurs</CardTitle>
+              <CardDescription className="text-sm mt-1">Total : {users?.length || 0} utilisateurs</CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : users && users.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>ID Telegram</TableHead>
-                  <TableHead>Nom</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Créé le</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.id}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{user.telegram_user_id}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      {user.first_name} {user.last_name}
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border/50">
+                    <TableHead className="font-semibold text-muted-foreground h-12">ID</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">ID Telegram</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Nom</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Email</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Créé le</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {users.map((user, index) => (
+                    <TableRow key={user.id} className={index % 2 === 0 ? "bg-card" : "bg-muted/20"}>
+                      <TableCell className="font-medium text-foreground">
+                        <div className="flex items-center gap-2">
+                          {user.id}
+                          <CopyButton value={user.id} />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="font-mono text-xs">{user.telegram_user_id}</Badge>
+                          <CopyButton value={user.telegram_user_id} />
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-foreground">
+                        {user.first_name} {user.last_name}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                      <TableCell className="text-muted-foreground text-sm">{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">Aucun utilisateur trouvé</div>
+            <div className="text-center py-12 text-muted-foreground">Aucun utilisateur trouvé</div>
           )}
         </CardContent>
       </Card>

@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Wallet } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CopyButton } from "@/components/copy-button"
 
 export default function DepositsPage() {
   const { data: depositsData, isLoading: depositsLoading } = useDeposits()
@@ -14,7 +15,7 @@ export default function DepositsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Dépôts & Caisses</h2>
+        <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Dépôts & Caisses</h2>
         <p className="text-muted-foreground">Consultez les dépôts et soldes de caisse</p>
       </div>
 
@@ -85,7 +86,12 @@ export default function DepositsPage() {
                   <TableBody>
                     {depositsData.results.map((deposit) => (
                       <TableRow key={deposit.id}>
-                        <TableCell className="font-medium">{deposit.id}</TableCell>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            {deposit.id}
+                            <CopyButton value={deposit.id} />
+                          </div>
+                        </TableCell>
                         <TableCell>{deposit.bet_app.name}</TableCell>
                         <TableCell>
                           <Badge variant="default" className="font-mono">

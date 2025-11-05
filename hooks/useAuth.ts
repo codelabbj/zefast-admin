@@ -23,7 +23,10 @@ export function useLogin() {
       setAuthTokens({ access: data.access, refresh: data.refresh })
       setUserData(data.data)
       toast.success("Connexion réussie!")
-      router.push("/dashboard")
+      // Use window.location for full page reload to ensure cookies are available for middleware
+      setTimeout(() => {
+        window.location.href = "/dashboard"
+      }, 100)
     },
     onError: (error: any) => {
       // Error is already handled by axios interceptor

@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Plus, Search, RefreshCw } from "lucide-react"
 import { CreateBotTransactionDialog } from "@/components/create-bot-transaction-dialog"
 import { ChangeBotStatusDialog } from "@/components/change-bot-status-dialog"
+import { CopyButton } from "@/components/copy-button"
 
 export default function BotTransactionsPage() {
   const [filters, setFilters] = useState<BotTransactionFilters>({
@@ -55,7 +56,7 @@ export default function BotTransactionsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Transactions Bot</h2>
+          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Transactions Bot</h2>
           <p className="text-muted-foreground">Gérez les dépôts et retraits des bots</p>
         </div>
         <Button onClick={() => setCreateDialogOpen(true)}>
@@ -195,7 +196,12 @@ export default function BotTransactionsPage() {
                 <TableBody>
                   {transactionsData.results.map((transaction) => (
                     <TableRow key={transaction.id}>
-                      <TableCell className="font-mono text-xs">{transaction.reference}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        <div className="flex items-center gap-2">
+                          {transaction.reference}
+                          <CopyButton value={transaction.reference} />
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <Badge variant={transaction.type_trans === "deposit" ? "default" : "secondary"}>
                           {transaction.type_trans}
