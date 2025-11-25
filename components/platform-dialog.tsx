@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { useCreatePlatform, useUpdatePlatform, type PlatformInput, type Platform } from "@/hooks/usePlatforms"
+import { useCreatePlatform, useUpdatePlatform, type PlatformInput } from "@/hooks/usePlatforms"
 import {
     Dialog,
     DialogContent,
