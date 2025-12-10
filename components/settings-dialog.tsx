@@ -1,0 +1,321 @@
+"use client"
+
+import type React from "react"
+import { useState, useEffect } from "react"
+import { useSettings, useUpdateSettings, type SettingsInput } from "@/hooks/useSettings"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Loader2 } from "lucide-react"
+
+interface SettingsDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
+  const { data: settings, isLoading } = useSettings()
+  const updateSettings = useUpdateSettings()
+  const [formData, setFormData] = useState<SettingsInput>({
+    minimum_deposit: "",
+    minimum_withdrawal: "",
+    bonus_percent: "",
+    reward_mini_withdrawal: "",
+    whatsapp_phone: null,
+    telegram: null,
+    minimum_solde: null,
+    referral_bonus: false,
+    deposit_reward: false,
+    deposit_reward_percent: "",
+    min_version: null,
+    last_version: null,
+    dowload_apk_link: null,
+    wave_default_link: null,
+    orange_default_link: null,
+    mtn_default_link: null,
+  })
+
+  useEffect(() => {
+    if (settings) {
+      setFormData({
+        minimum_deposit: settings.minimum_deposit || "",
+        minimum_withdrawal: settings.minimum_withdrawal || "",
+        bonus_percent: settings.bonus_percent || "",
+        reward_mini_withdrawal: settings.reward_mini_withdrawal || "",
+        whatsapp_phone: settings.whatsapp_phone || null,
+        telegram: settings.telegram || null,
+        minimum_solde: settings.minimum_solde || null,
+        referral_bonus: settings.referral_bonus,
+        deposit_reward: settings.deposit_reward,
+        deposit_reward_percent: settings.deposit_reward_percent || "",
+        min_version: settings.min_version || null,
+        last_version: settings.last_version || null,
+        dowload_apk_link: settings.dowload_apk_link || null,
+        wave_default_link: settings.wave_default_link || null,
+        orange_default_link: settings.orange_default_link || null,
+        mtn_default_link: settings.mtn_default_link || null,
+      })
+    }
+  }, [settings])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    // Convert empty strings to null for optional fields
+    const submitData: SettingsInput = {
+      ...formData,
+      whatsapp_phone: formData.whatsapp_phone || null,
+      telegram: formData.telegram || null,
+      minimum_solde: formData.minimum_solde || null,
+      min_version: formData.min_version || null,
+      last_version: formData.last_version || null,
+      dowload_apk_link: formData.dowload_apk_link || null,
+      wave_default_link: formData.wave_default_link || null,
+      orange_default_link: formData.orange_default_link || null,
+      mtn_default_link: formData.mtn_default_link || null,
+    }
+    updateSettings.mutate(submitData, {
+      onSuccess: () => {
+        onOpenChange(false)
+      },
+    })
+  }
+
+  if (isLoading) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Modifier les Paramètres</DialogTitle>
+          <DialogDescription>Mettez à jour les paramètres de configuration de la plateforme</DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="minimum_deposit">Dépôt Minimum (FCFA) *</Label>
+              <Input
+                id="minimum_deposit"
+                type="number"
+                value={formData.minimum_deposit || ""}
+                onChange={(e) => setFormData({ ...formData, minimum_deposit: e.target.value })}
+                required
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="minimum_withdrawal">Retrait Minimum (FCFA) *</Label>
+              <Input
+                id="minimum_withdrawal"
+                type="number"
+                value={formData.minimum_withdrawal || ""}
+                onChange={(e) => setFormData({ ...formData, minimum_withdrawal: e.target.value })}
+                required
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="reward_mini_withdrawal">Retrait Minimum Récompense (FCFA) *</Label>
+              <Input
+                id="reward_mini_withdrawal"
+                type="number"
+                value={formData.reward_mini_withdrawal || ""}
+                onChange={(e) => setFormData({ ...formData, reward_mini_withdrawal: e.target.value })}
+                required
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="minimum_solde">Solde Minimum (FCFA)</Label>
+              <Input
+                id="minimum_solde"
+                type="number"
+                value={formData.minimum_solde || ""}
+                onChange={(e) => setFormData({ ...formData, minimum_solde: e.target.value || null })}
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bonus_percent">Pourcentage de Bonus (%) *</Label>
+              <Input
+                id="bonus_percent"
+                type="number"
+                value={formData.bonus_percent || ""}
+                onChange={(e) => setFormData({ ...formData, bonus_percent: e.target.value })}
+                required
+                disabled={updateSettings.isPending}
+                step="0.01"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="deposit_reward_percent">Pourcentage de Récompense de Dépôt (%) *</Label>
+              <Input
+                id="deposit_reward_percent"
+                type="number"
+                value={formData.deposit_reward_percent || ""}
+                onChange={(e) => setFormData({ ...formData, deposit_reward_percent: e.target.value })}
+                required
+                disabled={updateSettings.isPending}
+                step="0.01"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="whatsapp_phone">Téléphone WhatsApp</Label>
+              <Input
+                id="whatsapp_phone"
+                value={formData.whatsapp_phone || ""}
+                onChange={(e) => setFormData({ ...formData, whatsapp_phone: e.target.value || null })}
+                placeholder="+229XXXXXXXXX"
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="telegram">Telegram</Label>
+              <Input
+                id="telegram"
+                value={formData.telegram || ""}
+                onChange={(e) => setFormData({ ...formData, telegram: e.target.value || null })}
+                placeholder="@username ou lien Telegram"
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="min_version">Version Minimale</Label>
+              <Input
+                id="min_version"
+                value={formData.min_version || ""}
+                onChange={(e) => setFormData({ ...formData, min_version: e.target.value || null })}
+                placeholder="1.0.0"
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="last_version">Dernière Version</Label>
+              <Input
+                id="last_version"
+                value={formData.last_version || ""}
+                onChange={(e) => setFormData({ ...formData, last_version: e.target.value || null })}
+                placeholder="1.0.0"
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="dowload_apk_link">Lien de Téléchargement APK</Label>
+              <Input
+                id="dowload_apk_link"
+                value={formData.dowload_apk_link || ""}
+                onChange={(e) => setFormData({ ...formData, dowload_apk_link: e.target.value || null })}
+                placeholder="https://example.com/app.apk"
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="wave_default_link">Lien Wave par Défaut</Label>
+              <Input
+                id="wave_default_link"
+                value={formData.wave_default_link || ""}
+                onChange={(e) => setFormData({ ...formData, wave_default_link: e.target.value || null })}
+                placeholder="https://pay.wave.com/..."
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="orange_default_link">Lien Orange par Défaut</Label>
+              <Input
+                id="orange_default_link"
+                value={formData.orange_default_link || ""}
+                onChange={(e) => setFormData({ ...formData, orange_default_link: e.target.value || null })}
+                placeholder="https://..."
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="mtn_default_link">Lien MTN par Défaut</Label>
+              <Input
+                id="mtn_default_link"
+                value={formData.mtn_default_link || ""}
+                onChange={(e) => setFormData({ ...formData, mtn_default_link: e.target.value || null })}
+                placeholder="https://..."
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="referral_bonus">Bonus de Parrainage</Label>
+              <Switch
+                id="referral_bonus"
+                checked={formData.referral_bonus}
+                onCheckedChange={(checked) => setFormData({ ...formData, referral_bonus: checked })}
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="deposit_reward">Récompense de Dépôt</Label>
+              <Switch
+                id="deposit_reward"
+                checked={formData.deposit_reward}
+                onCheckedChange={(checked) => setFormData({ ...formData, deposit_reward: checked })}
+                disabled={updateSettings.isPending}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={updateSettings.isPending}
+            >
+              Annuler
+            </Button>
+            <Button type="submit" disabled={updateSettings.isPending}>
+              {updateSettings.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Mise à jour...
+                </>
+              ) : (
+                "Mettre à jour les Paramètres"
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+

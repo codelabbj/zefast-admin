@@ -11,20 +11,40 @@ export interface TransactionUser {
   email: string
 }
 
+export interface TransactionAppDetails {
+  id: string
+  name: string
+  image: string
+  enable: boolean
+  deposit_tuto_link: string | null
+  withdrawal_tuto_link: string | null
+  why_withdrawal_fail: string | null
+  order: number | null
+  city: string | null
+  street: string | null
+  minimun_deposit: number
+  max_deposit: number
+  minimun_with: number
+  max_win: number
+  active_for_deposit: boolean
+  active_for_with: boolean
+}
+
 export interface Transaction {
   id: number
   user: TransactionUser
+  app_details: TransactionAppDetails | null
   amount: number
   deposit_reward_amount: number | null
   reference: string
-  type_trans: "deposit" | "withdrawal"
-  status: "pending" | "accept" | "reject" | "timeout"
+  type_trans: "deposit" | "withdrawal" | "reward"
+  status: "pending" | "accept" | "reject" | "timeout" | "init_payment"
   created_at: string
   validated_at: string | null
   webhook_data: any
   wehook_receive_at: string | null
-  phone_number: string
-  user_app_id: string
+  phone_number: string | null
+  user_app_id: string | null
   withdriwal_code: string | null
   error_message: string | null
   transaction_link: string | null
@@ -32,7 +52,7 @@ export interface Transaction {
   otp_code: string | null
   public_id: string | null
   already_process: boolean
-  source: "mobile" | "web"
+  source: "mobile" | "web" | null
   old_status: string
   old_public_id: string
   success_webhook_send: boolean
@@ -41,7 +61,7 @@ export interface Transaction {
   timeout_webhook_send: boolean
   telegram_user: number | null
   app: string
-  network: number
+  network: number | null
 }
 
 export interface TransactionsResponse {
