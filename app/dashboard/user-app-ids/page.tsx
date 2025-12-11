@@ -141,8 +141,8 @@ export default function UserAppIdsPage() {
           ) : userAppIds && userAppIds.length > 0 ? (
             <>
               <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
+            <Table>
+              <TableHeader>
                     <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border/50">
                       <TableHead className="font-semibold text-muted-foreground h-12">ID</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">ID Utilisateur App</TableHead>
@@ -150,42 +150,42 @@ export default function UserAppIdsPage() {
                       <TableHead className="font-semibold text-muted-foreground">Utilisateur Telegram</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Crée le</TableHead>
                       <TableHead className="text-right font-semibold text-muted-foreground">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                     {userAppIds.map((userAppId, index) => (
                       <TableRow key={userAppId.id} className={index % 2 === 0 ? "bg-card" : "bg-muted/20"}>
                         <TableCell className="font-medium text-foreground">
-                          <div className="flex items-center gap-2">
-                            {userAppId.id}
-                            <CopyButton value={userAppId.id} />
-                          </div>
-                        </TableCell>
+                      <div className="flex items-center gap-2">
+                        {userAppId.id}
+                        <CopyButton value={userAppId.id} />
+                      </div>
+                    </TableCell>
                         <TableCell className="text-foreground">
-                          <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                             <Badge variant="outline" className="font-mono">{userAppId.user_app_id}</Badge>
                             <CopyButton value={userAppId.user_app_id} className="h-7 w-7" />
-                          </div>
-                        </TableCell>
+                      </div>
+                    </TableCell>
                         <TableCell className="text-foreground">
                           {userAppId.app_details?.name || userAppId.app_name || "-"}
                         </TableCell>
                         <TableCell className="text-foreground">{userAppId.telegram_user || "-"}</TableCell>
                         <TableCell className="text-muted-foreground text-sm">{new Date(userAppId.created_at).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => handleEdit(userAppId)}>
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleDelete(userAppId)}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(userAppId)}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(userAppId)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
               </div>
               {userAppIdsData && (userAppIdsData.next || userAppIdsData.previous) && (
                 <div className="flex items-center justify-between px-6 py-4 border-t border-border/50">

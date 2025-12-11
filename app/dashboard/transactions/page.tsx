@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useTransactions, type Transaction, type TransactionFilters } from "@/hooks/useTransactions"
+import { useTransactions, useCheckTransactionStatus, type Transaction, type TransactionFilters } from "@/hooks/useTransactions"
 import { useNetworks } from "@/hooks/useNetworks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, Plus, Search, RefreshCw } from "lucide-react"
+import { Loader2, Plus, Search, RefreshCw, AlertCircle } from "lucide-react"
 import { CreateTransactionDialog } from "@/components/create-transaction-dialog"
 import { ChangeStatusDialog } from "@/components/change-status-dialog"
 import { CopyButton } from "@/components/copy-button"
@@ -21,8 +21,9 @@ export default function TransactionsPage() {
     page_size: 10,
   })
 
-  const { data: transactionsData, isLoading } = useTransactions(filters)
+  const { data: transactionsData, isLoading, isError, error } = useTransactions(filters)
   const { data: networks } = useNetworks()
+  const checkStatus = useCheckTransactionStatus()
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
@@ -31,6 +32,10 @@ export default function TransactionsPage() {
   const handleChangeStatus = (transaction: Transaction) => {
     setSelectedTransaction(transaction)
     setStatusDialogOpen(true)
+  }
+
+  const handleCheckStatus = (reference: string) => {
+    checkStatus.mutate({ reference })
   }
 
   const getStatusLabel = (status: string) => {
@@ -224,6 +229,41 @@ export default function TransactionsPage() {
             <div className="flex justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
+          ) : isError ? (
+            <div className="rounded-md border border-destructive/40 bg-destructive/10 p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <div className="text-sm text-destructive mb-2">
+                    Une erreur est survenue lors du chargement des transactions.
+                  </div>
+                  {error && <div className="text-xs text-destructive/70 mb-3">{error.message}</div>}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.location.reload()}
+                      className="text-destructive border-destructive/20 hover:bg-destructive/5"
+                    >
+                      <RefreshCw className="h-3 w-3 mr-1" />
+                      Recharger la page
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => {
+                        // Force refetch of transactions
+                        window.location.reload()
+                      }}
+                      className="bg-destructive hover:bg-destructive/90"
+                    >
+                      <RefreshCw className="h-3 w-3 mr-1" />
+                      Réessayer
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           ) : transactionsData && transactionsData.results.length > 0 ? (
             <>
               <div className="overflow-x-auto">
@@ -282,17 +322,33 @@ export default function TransactionsPage() {
                         </TableCell>
                         <TableCell>
                           {transaction.source ? (
-                            <Badge variant="outline" className="font-medium">{transaction.source}</Badge>
+                          <Badge variant="outline" className="font-medium">{transaction.source}</Badge>
                           ) : (
                             "-"
                           )}
                         </TableCell>
                         <TableCell className="text-muted-foreground text-sm">{new Date(transaction.created_at).toLocaleDateString()}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" onClick={() => handleChangeStatus(transaction)} className="font-medium">
-                            <RefreshCw className="h-4 w-4 mr-1" />
-                            Changer Statut
-                          </Button>
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleCheckStatus(transaction.reference)}
+                              disabled={checkStatus.isPending}
+                              className="font-medium text-blue-600 hover:text-blue-700"
+                            >
+                              {checkStatus.isPending ? (
+                                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                              ) : (
+                                <RefreshCw className="h-4 w-4 mr-1" />
+                              )}
+                              Vérifier Statut
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => handleChangeStatus(transaction)} className="font-medium">
+                              <RefreshCw className="h-4 w-4 mr-1" />
+                              Changer Statut
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

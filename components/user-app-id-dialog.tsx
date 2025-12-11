@@ -129,12 +129,12 @@ export function UserAppIdDialog({ open, onOpenChange, userAppId }: UserAppIdDial
 
       if (isValid) {
         // Proceed with creation after successful verification
-        createUserAppId.mutate(formData, {
-          onSuccess: () => {
-            onOpenChange(false)
-            setFormData({ user_app_id: "", app_name: "" })
-          },
-        })
+      createUserAppId.mutate(formData, {
+        onSuccess: () => {
+          onOpenChange(false)
+          setFormData({ user_app_id: "", app_name: "" })
+        },
+      })
       }
     } finally {
       setIsVerifying(false)

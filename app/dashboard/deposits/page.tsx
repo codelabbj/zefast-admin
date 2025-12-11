@@ -142,35 +142,35 @@ export default function DepositsPage() {
               ) : depositsData && depositsData.results.length > 0 ? (
                 <>
                   <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
+                <Table>
+                  <TableHeader>
                         <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border/50">
                           <TableHead className="font-semibold text-muted-foreground h-12">ID</TableHead>
                           <TableHead className="font-semibold text-muted-foreground">Plateforme</TableHead>
                           <TableHead className="font-semibold text-muted-foreground">Montant</TableHead>
                           <TableHead className="font-semibold text-muted-foreground">Créé le</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                         {depositsData.results.map((deposit, index) => (
                           <TableRow key={deposit.id} className={index % 2 === 0 ? "bg-card" : "bg-muted/20"}>
                             <TableCell className="font-medium text-foreground">
-                              <div className="flex items-center gap-2">
-                                {deposit.id}
-                                <CopyButton value={deposit.id} />
-                              </div>
-                            </TableCell>
+                          <div className="flex items-center gap-2">
+                            {deposit.id}
+                            <CopyButton value={deposit.id} />
+                          </div>
+                        </TableCell>
                             <TableCell className="text-foreground">{deposit.bet_app.name}</TableCell>
-                            <TableCell>
-                              <Badge variant="default" className="font-mono">
-                                {deposit.amount} FCFA
-                              </Badge>
-                            </TableCell>
+                        <TableCell>
+                          <Badge variant="default" className="font-mono">
+                            {deposit.amount} FCFA
+                          </Badge>
+                        </TableCell>
                             <TableCell className="text-muted-foreground text-sm">{new Date(deposit.created_at).toLocaleDateString()}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
                   </div>
                   {depositsData && (depositsData.next || depositsData.previous) && (
                     <div className="flex items-center justify-between px-6 py-4 border-t border-border/50">

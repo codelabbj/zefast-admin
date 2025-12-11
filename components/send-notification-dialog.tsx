@@ -124,48 +124,48 @@ export function SendNotificationDialog({ open, onOpenChange }: SendNotificationD
           </div>
 
           {userType !== "all" && (
-            <div className="space-y-2">
-              <Label htmlFor="user_id">Sélectionner un Utilisateur *</Label>
-              {isLoadingUsers ? (
-                <div className="flex items-center justify-center py-4">
-                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                </div>
-              ) : (
-                <>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      type="text"
+          <div className="space-y-2">
+            <Label htmlFor="user_id">Sélectionner un Utilisateur *</Label>
+            {isLoadingUsers ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="text"
                       placeholder={
                         userType === "bot"
                           ? "Rechercher un utilisateur bot par nom, email ou ID..."
                           : "Rechercher un utilisateur par nom, email ou téléphone..."
                       }
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-9"
-                      disabled={sendNotification.isPending}
-                    />
-                  </div>
-                  <Select
-                    value={formData.user_id}
-                    onValueChange={(value) => {
-                      setFormData({ ...formData, user_id: value })
-                      setSearchTerm("") // Clear search after selection
-                    }}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9"
                     disabled={sendNotification.isPending}
-                  >
-                    <SelectTrigger id="user_id">
-                      <SelectValue placeholder="Choisir un utilisateur..." />
-                    </SelectTrigger>
-                    <SelectContent>
+                  />
+                </div>
+                <Select
+                  value={formData.user_id}
+                  onValueChange={(value) => {
+                    setFormData({ ...formData, user_id: value })
+                    setSearchTerm("") // Clear search after selection
+                  }}
+                  disabled={sendNotification.isPending}
+                >
+                  <SelectTrigger id="user_id">
+                    <SelectValue placeholder="Choisir un utilisateur..." />
+                  </SelectTrigger>
+                  <SelectContent>
                       {userType === "bot" ? (
                         filteredBotUsers.length > 0 ? (
                           filteredBotUsers.map((user) => (
-                            <SelectItem key={user.id} value={user.telegram_user_id}>
-                              {user.first_name} {user.last_name} ({user.email || 'Aucun email'})
-                            </SelectItem>
-                          ))
+                        <SelectItem key={user.id} value={user.telegram_user_id}>
+                          {user.first_name} {user.last_name} ({user.email || 'Aucun email'})
+                        </SelectItem>
+                      ))
                         ) : (
                           <div className="px-2 py-6 text-center text-sm text-muted-foreground">
                             Aucun utilisateur bot trouvé
@@ -178,17 +178,17 @@ export function SendNotificationDialog({ open, onOpenChange }: SendNotificationD
                               {user.first_name} {user.last_name} ({user.email || 'Aucun email'})
                             </SelectItem>
                           ))
-                        ) : (
-                          <div className="px-2 py-6 text-center text-sm text-muted-foreground">
-                            Aucun utilisateur trouvé
-                          </div>
+                    ) : (
+                      <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                        Aucun utilisateur trouvé
+                      </div>
                         )
-                      )}
-                    </SelectContent>
-                  </Select>
-                </>
-              )}
-            </div>
+                    )}
+                  </SelectContent>
+                </Select>
+              </>
+            )}
+          </div>
           )}
 
           <div className="space-y-2">

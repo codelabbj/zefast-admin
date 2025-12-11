@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useBotTransactions, type BotTransaction, type BotTransactionFilters } from "@/hooks/useBotTransactions"
+import { useBotTransactions, useCheckBotTransactionStatus, type BotTransaction, type BotTransactionFilters } from "@/hooks/useBotTransactions"
 import { useNetworks } from "@/hooks/useNetworks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -23,6 +23,7 @@ export default function BotTransactionsPage() {
 
   const { data: transactionsData, isLoading } = useBotTransactions(filters)
   const { data: networks } = useNetworks()
+  const checkStatus = useCheckBotTransactionStatus()
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
@@ -31,6 +32,10 @@ export default function BotTransactionsPage() {
   const handleChangeStatus = (transaction: BotTransaction) => {
     setSelectedTransaction(transaction)
     setStatusDialogOpen(true)
+  }
+
+  const handleCheckStatus = (reference: string) => {
+    checkStatus.mutate({ reference })
   }
 
   const getStatusLabel = (status: string) => {
@@ -287,10 +292,26 @@ export default function BotTransactionsPage() {
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">{new Date(transaction.created_at).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" onClick={() => handleChangeStatus(transaction)} className="font-medium">
-                          <RefreshCw className="h-4 w-4 mr-1" />
-                          Changer Statut
-                        </Button>
+                        <div className="flex gap-2 justify-end">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleCheckStatus(transaction.reference)}
+                            disabled={checkStatus.isPending}
+                            className="font-medium text-blue-600 hover:text-blue-700"
+                          >
+                            {checkStatus.isPending ? (
+                              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                            ) : (
+                              <RefreshCw className="h-4 w-4 mr-1" />
+                            )}
+                            Vérifier Statut
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleChangeStatus(transaction)} className="font-medium">
+                            <RefreshCw className="h-4 w-4 mr-1" />
+                            Changer Statut
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

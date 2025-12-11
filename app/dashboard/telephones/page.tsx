@@ -145,8 +145,8 @@ export default function TelephonesPage() {
           ) : telephones && telephones.length > 0 ? (
             <>
               <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
+            <Table>
+              <TableHeader>
                     <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border/50">
                       <TableHead className="font-semibold text-muted-foreground h-12">ID</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Numéro de Téléphone</TableHead>
@@ -154,40 +154,40 @@ export default function TelephonesPage() {
                       <TableHead className="font-semibold text-muted-foreground">Utilisateur Telegram</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Créé le</TableHead>
                       <TableHead className="text-right font-semibold text-muted-foreground">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                     {telephones.map((telephone, index) => (
                       <TableRow key={telephone.id} className={index % 2 === 0 ? "bg-card" : "bg-muted/20"}>
                         <TableCell className="font-medium text-foreground">
-                          <div className="flex items-center gap-2">
-                            {telephone.id}
-                            <CopyButton value={telephone.id} />
-                          </div>
-                        </TableCell>
+                      <div className="flex items-center gap-2">
+                        {telephone.id}
+                        <CopyButton value={telephone.id} />
+                      </div>
+                    </TableCell>
                         <TableCell className="text-foreground">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline">{telephone.phone}</Badge>
-                            <CopyButton value={telephone.phone} />
-                          </div>
-                        </TableCell>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{telephone.phone}</Badge>
+                        <CopyButton value={telephone.phone} />
+                      </div>
+                    </TableCell>
                         <TableCell className="text-foreground">{getNetworkName(telephone.network)}</TableCell>
                         <TableCell className="text-foreground">{telephone.telegram_user || "-"}</TableCell>
                         <TableCell className="text-muted-foreground text-sm">{new Date(telephone.created_at).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => handleEdit(telephone)}>
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleDelete(telephone)}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(telephone)}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(telephone)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
               </div>
               {telephonesData && (telephonesData.next || telephonesData.previous) && (
                 <div className="flex items-center justify-between px-6 py-4 border-t border-border/50">

@@ -137,36 +137,36 @@ export default function PlatformsPage() {
             </div>
           ) : platforms && platforms.length > 0 ? (
             <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border/50">
-                      <TableHead className="font-semibold text-muted-foreground h-12">Nom</TableHead>
-                      <TableHead className="font-semibold text-muted-foreground">Statut</TableHead>
-                      <TableHead className="font-semibold text-muted-foreground">Dépôt Min</TableHead>
-                      <TableHead className="font-semibold text-muted-foreground">Dépôt Max</TableHead>
-                      <TableHead className="font-semibold text-muted-foreground">Retrait Min</TableHead>
-                      <TableHead className="font-semibold text-muted-foreground">Gain Max</TableHead>
-                      <TableHead className="font-semibold text-muted-foreground">Localisation</TableHead>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border/50">
+                    <TableHead className="font-semibold text-muted-foreground h-12">Nom</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Statut</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Dépôt Min</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Dépôt Max</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Retrait Min</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Gain Max</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Localisation</TableHead>
                       <TableHead className="text-right font-semibold text-muted-foreground">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {platforms.map((platform, index) => (
-                      <TableRow key={platform.id} className={index % 2 === 0 ? "bg-card" : "bg-muted/20"}>
-                        <TableCell className="font-semibold text-foreground">{platform.name}</TableCell>
-                        <TableCell>
-                          <Badge variant={platform.enable ? "default" : "secondary"} className="font-medium">
-                            {platform.enable ? "Actif" : "Inactif"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-foreground">{platform.minimun_deposit} FCFA</TableCell>
-                        <TableCell className="text-foreground">{platform.max_deposit} FCFA</TableCell>
-                        <TableCell className="text-foreground">{platform.minimun_with} FCFA</TableCell>
-                        <TableCell className="text-foreground">{platform.max_win} FCFA</TableCell>
-                        <TableCell className="text-muted-foreground text-sm">
-                          {platform.city && platform.street ? `${platform.city}, ${platform.street}` : "-"}
-                        </TableCell>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {platforms.map((platform, index) => (
+                    <TableRow key={platform.id} className={index % 2 === 0 ? "bg-card" : "bg-muted/20"}>
+                      <TableCell className="font-semibold text-foreground">{platform.name}</TableCell>
+                      <TableCell>
+                        <Badge variant={platform.enable ? "default" : "secondary"} className="font-medium">
+                          {platform.enable ? "Actif" : "Inactif"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-foreground">{platform.minimun_deposit} FCFA</TableCell>
+                      <TableCell className="text-foreground">{platform.max_deposit} FCFA</TableCell>
+                      <TableCell className="text-foreground">{platform.minimun_with} FCFA</TableCell>
+                      <TableCell className="text-foreground">{platform.max_win} FCFA</TableCell>
+                      <TableCell className="text-muted-foreground text-sm">
+                        {platform.city && platform.street ? `${platform.city}, ${platform.street}` : "-"}
+                      </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             <Button variant="ghost" size="icon" onClick={() => handleEdit(platform)}>
@@ -177,11 +177,11 @@ export default function PlatformsPage() {
                             </Button>
                           </div>
                         </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
               {platformsData && (platformsData.next || platformsData.previous) && (
                 <div className="flex items-center justify-between px-6 py-4 border-t border-border/50">
                   <div className="text-sm text-muted-foreground">

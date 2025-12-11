@@ -178,33 +178,33 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
         }
 
         createPlatform.mutate(submitData, {
-          onSuccess: () => {
-            onOpenChange(false)
-            setFormData({
-              name: "",
-              image: "",
-              enable: true,
+      onSuccess: () => {
+        onOpenChange(false)
+        setFormData({
+          name: "",
+          image: "",
+          enable: true,
               hash: null,
               cashdeskid: null,
               cashierpass: null,
-              deposit_tuto_link: null,
-              withdrawal_tuto_link: null,
-              why_withdrawal_fail: null,
-              order: null,
-              city: null,
-              street: null,
-              minimun_deposit: 200,
-              max_deposit: 100000,
-              minimun_with: 300,
-              max_win: 1000000,
+          deposit_tuto_link: null,
+          withdrawal_tuto_link: null,
+          why_withdrawal_fail: null,
+          order: null,
+          city: null,
+          street: null,
+          minimun_deposit: 200,
+          max_deposit: 100000,
+          minimun_with: 300,
+          max_win: 1000000,
               active_for_deposit: false,
               active_for_with: false,
-            })
+        })
             setSelectedFile(null)
             setPreviewUrl(null)
-          },
-        })
-      }
+      },
+    })
+  }
     } catch (error) {
       // Error is already handled by uploadFile
     } finally {

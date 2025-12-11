@@ -106,6 +106,10 @@ export interface ChangeBotStatusInput {
   reference: string
 }
 
+export interface CheckBotStatusInput {
+  reference: string
+}
+
 export function useBotTransactions(filters: BotTransactionFilters = {}) {
   return useQuery({
     queryKey: ["bot-transactions", filters],
@@ -151,11 +155,26 @@ export function useChangeBotTransactionStatus() {
 
   return useMutation({
     mutationFn: async (data: ChangeBotStatusInput) => {
-      const res = await api.post("/mobcash/change-bot-transaction", data)
+      const res = await api.put(`/bot/transactions/${data.reference}/status`, { status: data.status })
       return res.data
     },
     onSuccess: () => {
-      toast.success("Bot transaction status updated successfully!")
+      toast.success("Statut de la transaction bot mis à jour avec succès!")
+      queryClient.invalidateQueries({ queryKey: ["bot-transactions"] })
+    },
+  })
+}
+
+export function useCheckBotTransactionStatus() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: CheckBotStatusInput) => {
+      const res = await api.post(`/bot/transactions/check-status/${data.reference}`)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success("Statut vérifié avec succès!")
       queryClient.invalidateQueries({ queryKey: ["bot-transactions"] })
     },
   })

@@ -64,8 +64,9 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center lg:text-left">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-primary to-accent mb-4 lg:hidden">
+            <div className="inline-flex items-center justify-center w-20 h-16 rounded-xl bg-gradient-to-br from-primary to-accent mb-4 lg:hidden">
               {/* <Shield className="w-8 h-8 text-white" /> */}
+              <Image src={logo} alt="logo" className="w-20 h-20 rounded-lg border-white/20 mb-6" />
             </div>
             <h2 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Connexion

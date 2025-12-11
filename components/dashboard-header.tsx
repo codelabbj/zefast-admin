@@ -1,7 +1,7 @@
 "use client"
 
 import { useLogout } from "@/hooks/useAuth"
-import { getUserData } from "@/lib/auth"
+import { getUserData, debugAuthState } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { LogOut, User, Moon, Sun } from "lucide-react"
+import { LogOut, User, Moon, Sun, Bug } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import Image from "next/image";
@@ -81,6 +81,10 @@ export function DashboardHeader() {
               <DropdownMenuItem className="rounded-lg cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
                 Profil
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={debugAuthState} className="rounded-lg cursor-pointer">
+                <Bug className="mr-2 h-4 w-4" />
+                Debug Auth
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => logout.mutate()} className="text-destructive rounded-lg cursor-pointer focus:text-destructive">

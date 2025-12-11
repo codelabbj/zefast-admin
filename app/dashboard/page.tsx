@@ -227,35 +227,35 @@ export default function DashboardPage() {
         </div>
       ) : (
         <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat) => {
-              const Icon = stat.icon
-              return (
-                <Card 
-                  key={stat.title}
-                  className="group relative border border-border/50 bg-card hover:border-primary/30 transition-all duration-200 hover:shadow-md"
-                >
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                    <CardTitle className="text-sm font-semibold text-muted-foreground">
-                      {stat.title}
-                    </CardTitle>
-                    <div className={`p-2.5 rounded-lg ${stat.iconBg} ${stat.iconColor} transition-colors`}>
-                      <Icon className="h-5 w-5" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-baseline gap-2">
-                      <div className="text-3xl font-bold text-foreground">
-                        {stat.value}
-                      </div>
-                      <TrendingUp className="h-4 w-4 text-muted-foreground/60" />
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-3 font-medium">{stat.description}</p>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon
+          return (
+            <Card 
+              key={stat.title}
+              className="group relative border border-border/50 bg-card hover:border-primary/30 transition-all duration-200 hover:shadow-md"
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <CardTitle className="text-sm font-semibold text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+                <div className={`p-2.5 rounded-lg ${stat.iconBg} ${stat.iconColor} transition-colors`}>
+                  <Icon className="h-5 w-5" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-baseline gap-2">
+                  <div className="text-3xl font-bold text-foreground">
+                    {stat.value}
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground/60" />
+                </div>
+                <p className="text-sm text-muted-foreground mt-3 font-medium">{stat.description}</p>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </div>
 
           {/* Transactions by App */}
           {statistics?.dashboard_stats.transactions_by_app && Object.keys(statistics.dashboard_stats.transactions_by_app).length > 0 && (

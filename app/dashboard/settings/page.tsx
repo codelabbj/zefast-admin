@@ -15,9 +15,9 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Paramètres</h2>
-          <p className="text-muted-foreground">Consultez les paramètres de configuration de la plateforme</p>
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Paramètres</h2>
+        <p className="text-muted-foreground">Consultez les paramètres de configuration de la plateforme</p>
         </div>
         {settings && (
           <Button onClick={() => setDialogOpen(true)}>
@@ -128,6 +128,14 @@ export default function SettingsPage() {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Téléphone WhatsApp</span>
                 <Badge variant="outline">{settings.whatsapp_phone || "N/A"}</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Téléphone Moov Marchand</span>
+                <Badge variant="outline">{settings.moov_phone || "N/A"}</Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Téléphone Orange Marchand</span>
+                <Badge variant="outline">{settings.orange_phone || "N/A"}</Badge>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Telegram</span>

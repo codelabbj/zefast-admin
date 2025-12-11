@@ -132,6 +132,16 @@ export function useStatistics() {
       return res.data
     },
     refetchInterval: 30000, // Refetch every 30 seconds
+    retry: (failureCount, error: any) => {
+      // Don't retry on authentication errors - let the interceptor handle token refresh
+      if (error?.response?.status === 401) {
+        console.log("🔐 Statistics query: Not retrying 401 error - letting interceptor handle token refresh")
+        return false
+      }
+      // Retry other errors up to 2 times
+      return failureCount < 2
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   })
 }
 

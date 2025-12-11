@@ -25,6 +25,7 @@ interface SettingsDialogProps {
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const { data: settings, isLoading } = useSettings()
   const updateSettings = useUpdateSettings()
+  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({})
   const [formData, setFormData] = useState<SettingsInput>({
     minimum_deposit: "",
     minimum_withdrawal: "",
@@ -42,6 +43,8 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
     wave_default_link: null,
     orange_default_link: null,
     mtn_default_link: null,
+    moov_phone: null,
+    orange_phone: null,
   })
 
   useEffect(() => {
@@ -63,12 +66,56 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
         wave_default_link: settings.wave_default_link || null,
         orange_default_link: settings.orange_default_link || null,
         mtn_default_link: settings.mtn_default_link || null,
+        moov_phone: settings.moov_phone || null,
+        orange_phone: settings.orange_phone || null,
       })
     }
   }, [settings])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Client-side validation
+    const errors: {[key: string]: string} = {}
+
+    // Required field validation
+    if (!formData.minimum_deposit) {
+      errors.minimum_deposit = "Le dépôt minimum est requis"
+    }
+    if (!formData.minimum_withdrawal) {
+      errors.minimum_withdrawal = "Le retrait minimum est requis"
+    }
+    if (!formData.bonus_percent) {
+      errors.bonus_percent = "Le pourcentage de bonus est requis"
+    }
+    if (!formData.deposit_reward_percent) {
+      errors.deposit_reward_percent = "Le pourcentage de récompense est requis"
+    }
+
+    // URL validation
+    const urlFields = ['dowload_apk_link', 'wave_default_link', 'orange_default_link', 'mtn_default_link']
+    urlFields.forEach(urlField => {
+      const value = formData[urlField as keyof SettingsInput] as string
+      if (value && !value.match(/^https?:\/\/.+/)) {
+        errors[urlField] = "L'URL doit commencer par http:// ou https://"
+      }
+    })
+
+    // Phone number validation (basic)
+    const phoneFields = ['whatsapp_phone', 'moov_phone', 'orange_phone']
+    phoneFields.forEach(phoneField => {
+      const value = formData[phoneField as keyof SettingsInput] as string
+      if (value && !value.match(/^\+?[0-9\s\-\(\)]+$/)) {
+        errors[phoneField] = "Format de numéro de téléphone invalide"
+      }
+    })
+
+    setValidationErrors(errors)
+
+    if (Object.keys(errors).length > 0) {
+      return
+    }
+
     // Convert empty strings to null for optional fields
     const submitData: SettingsInput = {
       ...formData,
@@ -81,9 +128,12 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
       wave_default_link: formData.wave_default_link || null,
       orange_default_link: formData.orange_default_link || null,
       mtn_default_link: formData.mtn_default_link || null,
+      moov_phone: formData.moov_phone || null,
+      orange_phone: formData.orange_phone || null,
     }
     updateSettings.mutate(submitData, {
       onSuccess: () => {
+        setValidationErrors({})
         onOpenChange(false)
       },
     })
@@ -117,10 +167,19 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 id="minimum_deposit"
                 type="number"
                 value={formData.minimum_deposit || ""}
-                onChange={(e) => setFormData({ ...formData, minimum_deposit: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, minimum_deposit: e.target.value })
+                  if (validationErrors?.minimum_deposit) {
+                    setValidationErrors({ ...validationErrors, minimum_deposit: "" })
+                  }
+                }}
                 required
                 disabled={updateSettings.isPending}
+                className={validationErrors?.minimum_deposit ? "border-destructive" : ""}
               />
+              {validationErrors?.minimum_deposit && (
+                <p className="text-xs text-destructive">{validationErrors.minimum_deposit}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -129,10 +188,19 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 id="minimum_withdrawal"
                 type="number"
                 value={formData.minimum_withdrawal || ""}
-                onChange={(e) => setFormData({ ...formData, minimum_withdrawal: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, minimum_withdrawal: e.target.value })
+                  if (validationErrors?.minimum_withdrawal) {
+                    setValidationErrors({ ...validationErrors, minimum_withdrawal: "" })
+                  }
+                }}
                 required
                 disabled={updateSettings.isPending}
+                className={validationErrors?.minimum_withdrawal ? "border-destructive" : ""}
               />
+              {validationErrors?.minimum_withdrawal && (
+                <p className="text-xs text-destructive">{validationErrors.minimum_withdrawal}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -164,11 +232,20 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 id="bonus_percent"
                 type="number"
                 value={formData.bonus_percent || ""}
-                onChange={(e) => setFormData({ ...formData, bonus_percent: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, bonus_percent: e.target.value })
+                  if (validationErrors?.bonus_percent) {
+                    setValidationErrors({ ...validationErrors, bonus_percent: "" })
+                  }
+                }}
                 required
                 disabled={updateSettings.isPending}
                 step="0.01"
+                className={validationErrors?.bonus_percent ? "border-destructive" : ""}
               />
+              {validationErrors?.bonus_percent && (
+                <p className="text-xs text-destructive">{validationErrors.bonus_percent}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -177,11 +254,20 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 id="deposit_reward_percent"
                 type="number"
                 value={formData.deposit_reward_percent || ""}
-                onChange={(e) => setFormData({ ...formData, deposit_reward_percent: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, deposit_reward_percent: e.target.value })
+                  if (validationErrors?.deposit_reward_percent) {
+                    setValidationErrors({ ...validationErrors, deposit_reward_percent: "" })
+                  }
+                }}
                 required
                 disabled={updateSettings.isPending}
                 step="0.01"
+                className={validationErrors?.deposit_reward_percent ? "border-destructive" : ""}
               />
+              {validationErrors?.deposit_reward_percent && (
+                <p className="text-xs text-destructive">{validationErrors.deposit_reward_percent}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -189,10 +275,19 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               <Input
                 id="whatsapp_phone"
                 value={formData.whatsapp_phone || ""}
-                onChange={(e) => setFormData({ ...formData, whatsapp_phone: e.target.value || null })}
+                onChange={(e) => {
+                  setFormData({ ...formData, whatsapp_phone: e.target.value || null })
+                  if (validationErrors?.whatsapp_phone) {
+                    setValidationErrors({ ...validationErrors, whatsapp_phone: "" })
+                  }
+                }}
                 placeholder="+229XXXXXXXXX"
                 disabled={updateSettings.isPending}
+                className={validationErrors?.whatsapp_phone ? "border-destructive" : ""}
               />
+              {validationErrors?.whatsapp_phone && (
+                <p className="text-xs text-destructive">{validationErrors.whatsapp_phone}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -233,10 +328,19 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               <Input
                 id="dowload_apk_link"
                 value={formData.dowload_apk_link || ""}
-                onChange={(e) => setFormData({ ...formData, dowload_apk_link: e.target.value || null })}
+                onChange={(e) => {
+                  setFormData({ ...formData, dowload_apk_link: e.target.value || null })
+                  if (validationErrors?.dowload_apk_link) {
+                    setValidationErrors({ ...validationErrors, dowload_apk_link: "" })
+                  }
+                }}
                 placeholder="https://example.com/app.apk"
                 disabled={updateSettings.isPending}
+                className={validationErrors?.dowload_apk_link ? "border-destructive" : ""}
               />
+              {validationErrors.dowload_apk_link && (
+                <p className="text-xs text-destructive">{validationErrors.dowload_apk_link}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -268,6 +372,28 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 value={formData.mtn_default_link || ""}
                 onChange={(e) => setFormData({ ...formData, mtn_default_link: e.target.value || null })}
                 placeholder="https://..."
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="moov_phone">Téléphone Moov Marchand</Label>
+              <Input
+                id="moov_phone"
+                value={formData.moov_phone || ""}
+                onChange={(e) => setFormData({ ...formData, moov_phone: e.target.value || null })}
+                placeholder="+229XXXXXXXXX"
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="orange_phone">Téléphone Orange Marchand</Label>
+              <Input
+                id="orange_phone"
+                value={formData.orange_phone || ""}
+                onChange={(e) => setFormData({ ...formData, orange_phone: e.target.value || null })}
+                placeholder="+229XXXXXXXXX"
                 disabled={updateSettings.isPending}
               />
             </div>
