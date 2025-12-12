@@ -19,6 +19,7 @@ export interface Network {
     withdrawal_api: string
     payment_by_link: boolean
     otp_required: boolean
+    manual_processing: boolean
     enable: boolean
     deposit_message: string
     active_for_deposit: boolean

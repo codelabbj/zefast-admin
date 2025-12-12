@@ -61,6 +61,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
         withdrawal_api: "connect",
         payment_by_link: false,
         otp_required: false,
+        manual_processing: false,
         enable: true,
         deposit_message: "",
         active_for_deposit: true,
@@ -81,6 +82,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                 withdrawal_api: network.withdrawal_api,
                 payment_by_link: network.payment_by_link,
                 otp_required: network.otp_required,
+                manual_processing: network.manual_processing,
                 enable: network.enable,
                 deposit_message: network.deposit_message,
                 active_for_deposit: network.active_for_deposit,
@@ -100,6 +102,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                 withdrawal_api: "connect",
                 payment_by_link: false,
                 otp_required: false,
+                manual_processing: false,
                 enable: true,
                 deposit_message: "",
                 active_for_deposit: true,
@@ -139,6 +142,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                     withdrawal_api: network.withdrawal_api,
                     payment_by_link: network.payment_by_link,
                     otp_required: network.otp_required,
+                    manual_processing: network.manual_processing,
                     enable: network.enable,
                     deposit_message: network.deposit_message,
                     active_for_deposit: network.active_for_deposit,
@@ -158,6 +162,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                     withdrawal_api: "connect",
                     payment_by_link: false,
                     otp_required: false,
+                    manual_processing: false,
                     enable: true,
                     deposit_message: "",
                     active_for_deposit: true,
@@ -387,6 +392,16 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                                 id="otp_required"
                                 checked={formData.otp_required}
                                 onCheckedChange={(checked) => setFormData({ ...formData, otp_required: checked })}
+                                disabled={isPending}
+                            />
+                        </div>
+
+                        <div className="flex items-center justify-between space-x-2">
+                            <Label htmlFor="manual_processing">Traitement Manuel</Label>
+                            <Switch
+                                id="manual_processing"
+                                checked={formData.manual_processing}
+                                onCheckedChange={(checked) => setFormData({ ...formData, manual_processing: checked })}
                                 disabled={isPending}
                             />
                         </div>
