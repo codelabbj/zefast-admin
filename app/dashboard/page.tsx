@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Network, ArrowLeftRight, Wallet, TrendingUp, UserCheck, UserX, Bot, Gift, CreditCard, DollarSign, Receipt, TrendingDown, Share2, Award, Megaphone, BarChart3, Smartphone, Globe } from "lucide-react"
+import { Users, Network, ArrowLeftRight, Wallet, TrendingUp, UserCheck, UserX, Bot, Gift, CreditCard, DollarSign, Receipt, Share2, Award, Megaphone, BarChart3, Smartphone, Globe } from "lucide-react"
 import { useStatistics } from "@/hooks/useStatistics"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -56,36 +56,12 @@ export default function DashboardPage() {
       iconBg: "bg-primary/10",
     },
     {
-      title: "Solde Bizao",
-      value: statistics?.dashboard_stats.balance_bizao ? `${formatNumber(statistics.dashboard_stats.balance_bizao)} FCFA` : "-",
-      description: "Solde disponible",
-      icon: Wallet,
-      iconColor: "text-accent",
-      iconBg: "bg-accent/10",
-    },
-    {
       title: "Total Bonus",
       value: statistics?.dashboard_stats.total_bonus ? `${formatNumber(statistics.dashboard_stats.total_bonus)} FCFA` : "-",
       description: "Bonus distribués",
       icon: Gift,
       iconColor: "text-yellow-600",
       iconBg: "bg-yellow-600/10",
-    },
-    {
-      title: "Dépôts Bizao",
-      value: statistics?.dashboard_stats.deposits_bizao.count ?? "-",
-      description: `${statistics?.dashboard_stats.deposits_bizao.amount ? formatNumber(statistics.dashboard_stats.deposits_bizao.amount) + " FCFA" : ""}`,
-      icon: CreditCard,
-      iconColor: "text-blue-600",
-      iconBg: "bg-blue-600/10",
-    },
-    {
-      title: "Retraits Bizao",
-      value: statistics?.dashboard_stats.withdrawals_bizao.count ?? "-",
-      description: `${statistics?.dashboard_stats.withdrawals_bizao.amount ? formatNumber(statistics.dashboard_stats.withdrawals_bizao.amount) + " FCFA" : ""}`,
-      icon: Receipt,
-      iconColor: "text-orange-600",
-      iconBg: "bg-orange-600/10",
     },
     {
       title: "Utilisateurs Bot",
@@ -102,14 +78,6 @@ export default function DashboardPage() {
       icon: ArrowLeftRight,
       iconColor: "text-purple-600",
       iconBg: "bg-purple-600/10",
-    },
-    {
-      title: "Volume Net",
-      value: statistics?.volume_transactions.net_volume ? `${formatNumber(statistics.volume_transactions.net_volume)} FCFA` : "-",
-      description: "Volume net des transactions",
-      icon: DollarSign,
-      iconColor: "text-green-600",
-      iconBg: "bg-green-600/10",
     },
     {
       title: "Coupons Actifs",
@@ -134,22 +102,6 @@ export default function DashboardPage() {
       icon: Receipt,
       iconColor: "text-purple-600",
       iconBg: "bg-purple-600/10",
-    },
-    {
-      title: "Volume Dépôts",
-      value: statistics?.volume_transactions.deposits.total_count ?? "-",
-      description: `${statistics?.volume_transactions.deposits.total_amount ? formatNumber(statistics.volume_transactions.deposits.total_amount) + " FCFA" : ""}`,
-      icon: TrendingUp,
-      iconColor: "text-blue-600",
-      iconBg: "bg-blue-600/10",
-    },
-    {
-      title: "Volume Retraits",
-      value: statistics?.volume_transactions.withdrawals.total_count ?? "-",
-      description: `${statistics?.volume_transactions.withdrawals.total_amount ? formatNumber(statistics.volume_transactions.withdrawals.total_amount) + " FCFA" : ""}`,
-      icon: TrendingDown,
-      iconColor: "text-red-600",
-      iconBg: "bg-red-600/10",
     },
     {
       title: "Récompenses",
@@ -347,49 +299,6 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Volume Evolution - Daily */}
-          {statistics?.volume_transactions.evolution.daily && statistics.volume_transactions.evolution.daily.length > 0 && (
-            <Card className="border border-border/50 bg-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Évolution des Transactions (Quotidienne)
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead className="text-right">Nombre</TableHead>
-                        <TableHead className="text-right">Montant Total</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {statistics.volume_transactions.evolution.daily.slice(-10).map((item, index) => (
-                        <TableRow key={`${item.date}-${item.type_trans}-${index}`}>
-                          <TableCell>{formatDate(item.date)}</TableCell>
-                          <TableCell>
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              item.type_trans === "deposit" 
-                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                                : "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
-                            }`}>
-                              {item.type_trans === "deposit" ? "Dépôt" : "Retrait"}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-right">{item.count}</TableCell>
-                          <TableCell className="text-right">{formatNumber(item.total_amount)} FCFA</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {/* User Growth - Recent Daily */}
           {statistics?.user_growth.new_users.daily && statistics.user_growth.new_users.daily.length > 0 && (
