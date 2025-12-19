@@ -22,8 +22,8 @@ export interface Settings {
   wave_default_link: string | null
   orange_default_link: string | null
   mtn_default_link: string | null
-  moov_phone: string | null
-  orange_phone: string | null
+  moov_marchand_phone: string | null
+  orange_marchand_phone: string | null
   orange_marchand_phone: string | null
   bf_orange_marchand_phone: string | null
   bf_moov_marchand_phone: string | null
