@@ -105,11 +105,52 @@ export function isAuthenticated(): boolean {
   if (typeof window === 'undefined') {
     return false
   }
-  
+
   try {
-    return !!getAuthTokens().access
+    const tokens = getAuthTokens()
+    const isAuth = !!tokens.access
+
+    // Debug logging
+    console.log("🔐 Authentication check:", {
+      hasAccessToken: !!tokens.access,
+      hasRefreshToken: !!tokens.refresh,
+      accessTokenLength: tokens.access?.length || 0,
+      isAuthenticated: isAuth
+    })
+
+    return isAuth
   } catch (error) {
     console.error("Error checking authentication:", error)
     return false
+  }
+}
+
+export function debugAuthState() {
+  if (typeof window === 'undefined') {
+    console.log("🔐 Auth debug: Server-side, no window object")
+    return
+  }
+
+  try {
+    const tokens = getAuthTokens()
+    const userData = getUserData()
+    const cookies = document.cookie
+
+    console.log("🔐 Authentication Debug Info:", {
+      tokens: {
+        access: tokens.access ? `${tokens.access.substring(0, 20)}...` : null,
+        refresh: tokens.refresh ? `${tokens.refresh.substring(0, 20)}...` : null
+      },
+      userData: userData ? {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email
+      } : null,
+      cookies: cookies.split(';').map(c => c.trim().split('=')[0]),
+      localStorageKeys: Object.keys(localStorage),
+      isAuthenticated: isAuthenticated()
+    })
+  } catch (error) {
+    console.error("Error debugging auth state:", error)
   }
 }

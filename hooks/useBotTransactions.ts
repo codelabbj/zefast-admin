@@ -11,9 +11,29 @@ export interface BotTransactionUser {
   email: string
 }
 
+export interface BotTransactionAppDetails {
+  id: string
+  name: string
+  image: string
+  enable: boolean
+  deposit_tuto_link: string | null
+  withdrawal_tuto_link: string | null
+  why_withdrawal_fail: string | null
+  order: number | null
+  city: string | null
+  street: string | null
+  minimun_deposit: number
+  max_deposit: number
+  minimun_with: number
+  max_win: number
+  active_for_deposit: boolean
+  active_for_with: boolean
+}
+
 export interface BotTransaction {
   id: number
   user: BotTransactionUser
+  app_details: BotTransactionAppDetails | null
   amount: number
   deposit_reward_amount: number | null
   reference: string
@@ -23,8 +43,8 @@ export interface BotTransaction {
   validated_at: string | null
   webhook_data: any
   wehook_receive_at: string | null
-  phone_number: string
-  user_app_id: string
+  phone_number: string | null
+  user_app_id: string | null
   withdriwal_code: string | null
   error_message: string | null
   transaction_link: string | null
@@ -32,7 +52,7 @@ export interface BotTransaction {
   otp_code: string | null
   public_id: string | null
   already_process: boolean
-  source: "mobile" | "web" | "bot"
+  source: "mobile" | "web" | "bot" | null
   old_status: string
   old_public_id: string
   success_webhook_send: boolean
@@ -41,7 +61,7 @@ export interface BotTransaction {
   timeout_webhook_send: boolean
   telegram_user: number | null
   app: string
-  network: number
+  network: number | null
 }
 
 export interface BotTransactionsResponse {
@@ -83,6 +103,10 @@ export interface CreateBotWithdrawalInput {
 
 export interface ChangeBotStatusInput {
   status: "init_payment" | "accept" | "error" | "pending"
+  reference: string
+}
+
+export interface CheckBotStatusInput {
   reference: string
 }
 
@@ -131,11 +155,26 @@ export function useChangeBotTransactionStatus() {
 
   return useMutation({
     mutationFn: async (data: ChangeBotStatusInput) => {
-      const res = await api.post("/mobcash/change-bot-transaction", data)
+      const res = await api.put(`/bot/transactions/${data.reference}/status`, { status: data.status })
       return res.data
     },
     onSuccess: () => {
-      toast.success("Bot transaction status updated successfully!")
+      toast.success("Statut de la transaction bot mis à jour avec succès!")
+      queryClient.invalidateQueries({ queryKey: ["bot-transactions"] })
+    },
+  })
+}
+
+export function useCheckBotTransactionStatus() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: CheckBotStatusInput) => {
+      const res = await api.post(`/bot/transactions/check-status/${data.reference}`)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success("Statut vérifié avec succès!")
       queryClient.invalidateQueries({ queryKey: ["bot-transactions"] })
     },
   })

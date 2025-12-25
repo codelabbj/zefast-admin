@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/command"
 import { Loader2, Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
-import {useUsers} from "@/hooks/use-profile";
+import {useUsers} from "@/hooks/use-profile"
 
 interface SendNotificationDialogProps {
     open: boolean
@@ -37,6 +37,176 @@ interface SendNotificationDialogProps {
 }
 
 type NotificationType = "all" | "bot_user" | "normal_user"
+
+interface BotUserComboboxProps {
+    selected: string | number | null
+    onSelect: (userId: string | number) => void
+    searchTerm: string
+    onSearchChange: (term: string) => void
+    users: any[]
+    isLoading: boolean
+    disabled: boolean
+}
+
+interface NormalUserComboboxProps {
+    selected: string | number | null
+    onSelect: (userId: string | number) => void
+    searchTerm: string
+    onSearchChange: (term: string) => void
+    users: any[]
+    isLoading: boolean
+    disabled: boolean
+}
+
+function BotUserCombobox({
+    selected,
+    onSelect,
+    searchTerm,
+    onSearchChange,
+    users,
+    isLoading,
+    disabled,
+}: BotUserComboboxProps) {
+    const [open, setOpen] = useState(false)
+
+    const selectedUser = users?.find((user) => user.id === selected)
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between"
+                    disabled={disabled || isLoading}
+                >
+                    {selectedUser
+                        ? `${selectedUser.first_name} ${selectedUser.last_name}`
+                        : "Sélectionner un utilisateur bot..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[400px] p-0">
+                <Command shouldFilter={false}>
+                    <CommandInput
+                        placeholder="Rechercher un utilisateur bot..."
+                        value={searchTerm}
+                        onValueChange={onSearchChange}
+                    />
+                    {isLoading ? (
+                        <div className="flex items-center justify-center py-6">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        </div>
+                    ) : (
+                        <CommandList>
+                            <CommandEmpty>Aucun utilisateur bot trouvé.</CommandEmpty>
+                            <CommandGroup>
+                                {users?.map((user) => (
+                                    <CommandItem
+                                        key={user.id}
+                                        value={`${user.first_name} ${user.last_name}`}
+                                        onSelect={() => {
+                                            onSelect(user.telegram_user_id)
+                                            setOpen(false)
+                                        }}
+                                    >
+                                        <Check
+                                            className={cn(
+                                                "mr-2 h-4 w-4",
+                                                selected === user.telegram_user_id ? "opacity-100" : "opacity-0"
+                                            )}
+                                        />
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">{user.first_name} {user.last_name}</span>
+                                            <span className="text-xs text-muted-foreground">
+                                                {user.email}
+                                            </span>
+                                        </div>
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    )}
+                </Command>
+            </PopoverContent>
+        </Popover>
+    )
+}
+
+function NormalUserCombobox({
+    selected,
+    onSelect,
+    searchTerm,
+    onSearchChange,
+    users,
+    isLoading,
+    disabled,
+}: NormalUserComboboxProps) {
+    const [open, setOpen] = useState(false)
+
+    const selectedUser = users?.find((user) => user.id === selected)
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between"
+                    disabled={disabled || isLoading}
+                >
+                    {selected && selectedUser ? selectedUser.username : "Sélectionner un utilisateur..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[400px] p-0">
+                <Command shouldFilter={false}>
+                    <CommandInput
+                        placeholder="Rechercher un utilisateur..."
+                        value={searchTerm}
+                        onValueChange={onSearchChange}
+                    />
+                    {isLoading ? (
+                        <div className="flex items-center justify-center py-6">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        </div>
+                    ) : (
+                        <CommandList>
+                            <CommandEmpty>Aucun utilisateur trouvé.</CommandEmpty>
+                            <CommandGroup>
+                                {users?.map((user) => (
+                                    <CommandItem
+                                        key={user.id}
+                                        value={user.username}
+                                        onSelect={() => {
+                                            onSelect(user.id)
+                                            setOpen(false)
+                                        }}
+                                    >
+                                        <Check
+                                            className={cn(
+                                                "mr-2 h-4 w-4",
+                                                selected === user.id ? "opacity-100" : "opacity-0"
+                                            )}
+                                        />
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">{user.username}</span>
+                                            <span className="text-xs text-muted-foreground">
+                                                {user.email}
+                                            </span>
+                                        </div>
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    )}
+                </Command>
+            </PopoverContent>
+        </Popover>
+    )
+}
 
 export function SendNotificationDialog({ open, onOpenChange }: SendNotificationDialogProps) {
 
@@ -70,7 +240,7 @@ export function SendNotificationDialog({ open, onOpenChange }: SendNotificationD
     const [formData, setFormData] = useState<{
         title: string,
         content: string,
-        user_id: string|null|number,
+        user_id: string|number|null,
     }>({
         title: "",
         content: "",
@@ -95,16 +265,14 @@ export function SendNotificationDialog({ open, onOpenChange }: SendNotificationD
         })
     }
 
-    useEffect(() => {
-        console.log("Available normal users",users)
-    }, [users,debouncedUsersSearchTerm]);
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>Envoyer une Notification</DialogTitle>
-                    <DialogDescription>Envoyer une notification à un utilisateur spécifique</DialogDescription>
+                    <DialogDescription>
+                        Envoyer une notification à tous les utilisateurs ou à un utilisateur spécifique
+                    </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -116,10 +284,9 @@ export function SendNotificationDialog({ open, onOpenChange }: SendNotificationD
                                 setNotificationType(value as NotificationType)
                                 setFormData({ ...formData, user_id: null })
                             }}
-                            disabled={sendNotification.isPending}
                         >
                             <SelectTrigger id="notification_type">
-                                <SelectValue placeholder="Sélectionner un type..." />
+                                <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Tous les utilisateurs</SelectItem>
@@ -128,36 +295,6 @@ export function SendNotificationDialog({ open, onOpenChange }: SendNotificationD
                             </SelectContent>
                         </Select>
                     </div>
-
-                    {notificationType === "bot_user" && (
-                        <div className="space-y-2">
-                            <Label>Sélectionner un Utilisateur Bot *</Label>
-                            <BotUserCombobox
-                                selected={formData.user_id as number | null}
-                                onSelect={(userId) => setFormData({ ...formData, user_id: userId })}
-                                searchTerm={botUsersSearchTerm}
-                                onSearchChange={setBotUsersSearchTerm}
-                                isLoading={isLoadingBotUsers}
-                                users={botUsers}
-                                disabled={sendNotification.isPending}
-                            />
-                        </div>
-                    )}
-
-                    {notificationType === "normal_user" && (
-                        <div className="space-y-2">
-                            <Label>Sélectionner un Utilisateur Normal *</Label>
-                            <NormalUserCombobox
-                                selected={formData.user_id as string | null}
-                                onSelect={(userId) => setFormData({ ...formData, user_id: userId })}
-                                searchTerm={usersSearchTerm}
-                                onSearchChange={setUsersSearchTerm}
-                                users={users?.results}
-                                isLoading={isLoadingUser}
-                                disabled={sendNotification.isPending}
-                            />
-                        </div>
-                    )}
 
                     <div className="space-y-2">
                         <Label htmlFor="title">Titre *</Label>
@@ -177,12 +314,42 @@ export function SendNotificationDialog({ open, onOpenChange }: SendNotificationD
                             id="content"
                             value={formData.content}
                             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                            placeholder="Contenu de la notification..."
-                            rows={4}
+                            placeholder="Contenu de la notification"
                             required
                             disabled={sendNotification.isPending}
+                            rows={3}
                         />
                     </div>
+
+                    {notificationType === "bot_user" && (
+                        <div className="space-y-2">
+                            <Label>Utilisateur Bot *</Label>
+                            <BotUserCombobox
+                                selected={formData.user_id}
+                                onSelect={(userId) => setFormData({ ...formData, user_id: userId })}
+                                searchTerm={botUsersSearchTerm}
+                                onSearchChange={setBotUsersSearchTerm}
+                                users={botUsers}
+                                isLoading={isLoadingBotUsers}
+                                disabled={sendNotification.isPending}
+                            />
+                        </div>
+                    )}
+
+                    {notificationType === "normal_user" && (
+                        <div className="space-y-2">
+                            <Label>Utilisateur Normal *</Label>
+                            <NormalUserCombobox
+                                selected={formData.user_id}
+                                onSelect={(userId) => setFormData({ ...formData, user_id: userId })}
+                                searchTerm={usersSearchTerm}
+                                onSearchChange={setUsersSearchTerm}
+                                users={users}
+                                isLoading={isLoadingUser}
+                                disabled={sendNotification.isPending}
+                            />
+                        </div>
+                    )}
 
                     <DialogFooter>
                         <Button
@@ -190,7 +357,6 @@ export function SendNotificationDialog({ open, onOpenChange }: SendNotificationD
                             variant="outline"
                             onClick={() => onOpenChange(false)}
                             disabled={sendNotification.isPending}
-                            className="hover:bg-primary/10"
                         >
                             Annuler
                         </Button>
@@ -201,206 +367,12 @@ export function SendNotificationDialog({ open, onOpenChange }: SendNotificationD
                                     Envoi...
                                 </>
                             ) : (
-                                "Envoyer la Notification"
+                                "Envoyer"
                             )}
                         </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
-    )
-}
-
-interface BotUser {
-    id: number
-    telegram_user_id: string
-    first_name: string
-    last_name: string
-    email?: string
-}
-
-interface BotUserComboboxProps {
-    selected: number | null
-    onSelect: (userId: number) => void
-    searchTerm: string
-    onSearchChange: (term: string) => void
-    isLoading: boolean
-    users: BotUser[] | undefined
-    disabled: boolean
-}
-
-function BotUserCombobox({
-                             selected,
-                             onSelect,
-                             searchTerm,
-                             onSearchChange,
-                             isLoading,
-                             users,
-                             disabled,
-                         }: BotUserComboboxProps) {
-    const [open, setOpen] = useState(false)
-
-    const selectedUser = users?.find((user) => user.id === selected)
-
-    return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between"
-                    disabled={disabled || isLoading}
-                >
-                    {selectedUser
-                        ? `${selectedUser.first_name} ${selectedUser.last_name}`
-                        : "Sélectionner un utilisateur..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[400px] p-0">
-                <Command shouldFilter={false}>
-                    <CommandInput
-                        placeholder="Rechercher un utilisateur..."
-                        value={searchTerm}
-                        onValueChange={onSearchChange}
-                    />
-                    {isLoading ? (
-                        <div className="flex items-center justify-center py-6">
-                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                        </div>
-                    ) : (
-                        <CommandList>
-                            {!users || users.length === 0 ? (
-                                <CommandEmpty>Aucun utilisateur trouvé.</CommandEmpty>
-                            ) : (
-                                <CommandGroup>
-                                    {users.map((user) => (
-                                        <CommandItem
-                                            key={user.id}
-                                            value={String(user.id)}
-                                            onSelect={() => {
-                                                onSelect(user.id)
-                                                setOpen(false)
-                                            }}
-                                        >
-                                            <Check
-                                                className={cn(
-                                                    "mr-2 h-4 w-4",
-                                                    selected === user.id ? "opacity-100" : "opacity-0"
-                                                )}
-                                            />
-                                            <div className="flex flex-col">
-                        <span className="font-medium">
-                          {user.first_name} {user.last_name}
-                        </span>
-                                                <span className="text-xs text-muted-foreground">
-                          {user.email || "Aucun email"}
-                        </span>
-                                            </div>
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            )}
-                        </CommandList>
-                    )}
-                </Command>
-            </PopoverContent>
-        </Popover>
-    )
-}
-
-interface UserProfile {
-    id: string
-    username: string
-    email: string
-    first_name: string
-    last_name: string
-}
-
-interface NormalUserComboboxProps {
-    selected: string | null
-    onSelect: (userId: string) => void
-    searchTerm: string
-    onSearchChange: (term: string) => void
-    users: UserProfile[] | undefined
-    isLoading: boolean
-    disabled: boolean
-}
-
-function NormalUserCombobox({
-                                selected,
-                                onSelect,
-                                searchTerm,
-                                onSearchChange,
-                                users,
-                                isLoading,
-                                disabled,
-                            }: NormalUserComboboxProps) {
-    const [open, setOpen] = useState(false)
-
-    const selectedUser = users?.find((user) => user.id === selected)
-
-    return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between"
-                    disabled={disabled || isLoading}
-                >
-                    {selected && selectedUser ? selectedUser.username : "Sélectionner un utilisateur..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[400px] p-0">
-                <Command shouldFilter={false}>
-                    <CommandInput
-                        placeholder="Rechercher un utilisateur..."
-                        value={searchTerm}
-                        onValueChange={onSearchChange}
-                    />
-                    {isLoading ? (
-                        <div className="flex items-center justify-center py-6">
-                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                        </div>
-                    ) : (
-                        <CommandList>
-                            {!users || users.length === 0 ? (
-                                <CommandEmpty>Aucun utilisateur trouvé.</CommandEmpty>
-                            ) : (
-                                <CommandGroup>
-                                    {users.map((user) => (
-                                        <CommandItem
-                                            key={user.id}
-                                            value={user.id}
-                                            onSelect={() => {
-                                                onSelect(user.id)
-                                                setOpen(false)
-                                            }}
-                                        >
-                                            <Check
-                                                className={cn(
-                                                    "mr-2 h-4 w-4",
-                                                    selected === user.id ? "opacity-100" : "opacity-0"
-                                                )}
-                                            />
-                                            <div className="flex flex-col">
-                                                <span className="font-medium">{user.username}</span>
-                                                <span className="text-xs text-muted-foreground">
-                          {user.email}
-                        </span>
-                                            </div>
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            )}
-                        </CommandList>
-                    )}
-                </Command>
-            </PopoverContent>
-        </Popover>
     )
 }
