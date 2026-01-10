@@ -11,6 +11,7 @@ import { Loader2 } from "lucide-react"
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [isChecking, setIsChecking] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   
   useEffect(() => {
     // Check if we're in the browser
@@ -62,15 +63,48 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex flex-col">
-      <DashboardHeader />
+      <DashboardHeader
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+        sidebarOpen={sidebarOpen}
+      />
       <div className="flex flex-1 overflow-hidden">
-        <aside className="hidden md:flex w-72 flex-col border-r border-border/40 bg-card/30 backdrop-blur-sm h-[calc(100vh-5rem)] overflow-y-auto">
+        {/* Mobile overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar */}
+        <aside className={`
+          fixed inset-y-0 left-0 z-50 w-72 flex-col border-r border-border/40 bg-card/30 backdrop-blur-sm
+          transform transition-transform duration-300 ease-in-out
+          md:relative md:translate-x-0 md:z-auto
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:flex
+          h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] overflow-y-auto
+        `}>
           <div className="p-6">
-            <DashboardNav />
+            <DashboardNav onNavigate={() => setSidebarOpen(false)} />
           </div>
         </aside>
+
         <main className="flex-1 p-8 overflow-y-auto h-[calc(100vh-5rem)]">{children}</main>
       </div>
+      <footer className="border-t border-border/40 bg-card/30 backdrop-blur-sm py-4 px-8">
+        <div className="text-center text-sm text-muted-foreground">
+          Développé par{" "}
+          <a
+            href="https://codelab.bj"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-primary hover:text-primary/80 transition-colors"
+          >
+            CodeLab
+          </a>
+        </div>
+      </footer>
     </div>
   )
 }
