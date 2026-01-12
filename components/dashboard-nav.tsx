@@ -16,24 +16,35 @@ import {
   Wallet,
   Layers,
   Bot,
+  Ticket,
+  Megaphone,
+  CreditCard,
 } from "lucide-react"
 
 const navItems = [
   { href: "/dashboard", label: "Tableau de Bord", icon: LayoutDashboard },
+  { href: "/dashboard/users", label: "Utilisateurs", icon: Users },
   { href: "/dashboard/bot-users", label: "Utilisateurs Bot", icon: Users },
   { href: "/dashboard/networks", label: "Réseaux", icon: Network },
   { href: "/dashboard/telephones", label: "Téléphones", icon: Phone },
   { href: "/dashboard/user-app-ids", label: "IDs Utilisateur", icon: IdCard },
   { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
   { href: "/dashboard/bonuses", label: "Bonus", icon: Gift },
+  { href: "/dashboard/coupons", label: "Coupons", icon: Ticket },
+  { href: "/dashboard/advertisements", label: "Publicités", icon: Megaphone },
   { href: "/dashboard/transactions", label: "Transactions", icon: ArrowLeftRight },
+  { href: "/dashboard/recharges", label: "Recharges", icon: CreditCard },
   { href: "/dashboard/bot-transactions", label: "Transactions Bot", icon: Bot },
   { href: "/dashboard/platforms", label: "Plateformes", icon: Layers },
-  { href: "/dashboard/deposits", label: "Dépôts & Caisses", icon: Wallet },
+  // { href: "/dashboard/deposits", label: "Dépôts & Caisses", icon: Wallet },
   { href: "/dashboard/settings", label: "Paramètres", icon: Settings },
 ]
 
-export function DashboardNav() {
+interface DashboardNavProps {
+  onNavigate?: () => void
+}
+
+export function DashboardNav({ onNavigate }: DashboardNavProps = {}) {
   const pathname = usePathname()
 
   return (
@@ -46,6 +57,7 @@ export function DashboardNav() {
           <Link
             key={item.href}
             href={item.href}
+            onClick={onNavigate}
             className={cn(
               "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 relative overflow-hidden",
               isActive
