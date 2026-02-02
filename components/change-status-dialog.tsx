@@ -25,7 +25,6 @@ interface ChangeStatusDialogProps {
 
 export function ChangeStatusDialog({ open, onOpenChange, transaction }: ChangeStatusDialogProps) {
   const changeStatus = useChangeTransactionStatus()
-  const [status, setStatus] = useState<"accept" | "reject" | "pending">("pending")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,7 +32,6 @@ export function ChangeStatusDialog({ open, onOpenChange, transaction }: ChangeSt
 
     changeStatus.mutate(
       {
-        status,
         reference: transaction.reference,
       },
       {
@@ -52,17 +50,17 @@ export function ChangeStatusDialog({ open, onOpenChange, transaction }: ChangeSt
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="status">Nouveau Statut *</Label>
-            <Select value={status} onValueChange={(value: any) => setStatus(value)} disabled={changeStatus.isPending}>
-              <SelectTrigger id="status">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pending">En attente</SelectItem>
-                <SelectItem value="accept">Accepter</SelectItem>
-                <SelectItem value="reject">Rejeter</SelectItem>
-              </SelectContent>
-            </Select>
+            <p className="text-sm text-muted-foreground">
+              Êtes-vous sûr de vouloir changer le statut de cette transaction ?
+            </p>
+            <div className="bg-muted p-3 rounded-md">
+              <p className="text-sm">
+                <strong>Référence:</strong> {transaction?.reference}
+              </p>
+              <p className="text-sm">
+                <strong>Statut actuel:</strong> {transaction?.status}
+              </p>
+            </div>
           </div>
 
           <DialogFooter>

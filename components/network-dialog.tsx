@@ -34,7 +34,7 @@ const NETWORK_CHOICES = [
 ]
 
 const API_CHOICES = [
-    { value: "connect", label: "FASTXOF Connect" },
+    { value: "connect", label: "Zefast Connect" },
 ]
 
 interface NetworkDialogProps {
@@ -61,10 +61,12 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
         withdrawal_api: "connect",
         payment_by_link: false,
         otp_required: false,
+        manual_processing: false,
         enable: true,
         deposit_message: "",
         active_for_deposit: true,
         active_for_with: true,
+        customer_pay_fee: false,
     })
 
     useEffect(() => {
@@ -81,10 +83,12 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                 withdrawal_api: network.withdrawal_api,
                 payment_by_link: network.payment_by_link,
                 otp_required: network.otp_required,
+                manual_processing: network.manual_processing,
                 enable: network.enable,
                 deposit_message: network.deposit_message,
                 active_for_deposit: network.active_for_deposit,
                 active_for_with: network.active_for_with,
+                customer_pay_fee: network.customer_pay_fee,
             })
             setSelectedImage(network.image)
         } else {
@@ -100,10 +104,12 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                 withdrawal_api: "connect",
                 payment_by_link: false,
                 otp_required: false,
+                manual_processing: false,
                 enable: true,
                 deposit_message: "",
                 active_for_deposit: true,
                 active_for_with: true,
+                customer_pay_fee: false,
             })
             setSelectedImage(null)
         }
@@ -139,10 +145,12 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                     withdrawal_api: network.withdrawal_api,
                     payment_by_link: network.payment_by_link,
                     otp_required: network.otp_required,
+                    manual_processing: network.manual_processing,
                     enable: network.enable,
                     deposit_message: network.deposit_message,
                     active_for_deposit: network.active_for_deposit,
                     active_for_with: network.active_for_with,
+                    customer_pay_fee: network.customer_pay_fee,
                 })
                 setSelectedImage(network.image)
             } else {
@@ -158,10 +166,12 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                     withdrawal_api: "connect",
                     payment_by_link: false,
                     otp_required: false,
+                    manual_processing: false,
                     enable: true,
                     deposit_message: "",
                     active_for_deposit: true,
                     active_for_with: true,
+                    customer_pay_fee: false,
                 })
                 setSelectedImage(null)
             }
@@ -392,6 +402,16 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                         </div>
 
                         <div className="flex items-center justify-between space-x-2">
+                            <Label htmlFor="manual_processing">Traitement Manuel</Label>
+                            <Switch
+                                id="manual_processing"
+                                checked={formData.manual_processing}
+                                onCheckedChange={(checked) => setFormData({ ...formData, manual_processing: checked })}
+                                disabled={isPending}
+                            />
+                        </div>
+
+                        <div className="flex items-center justify-between space-x-2">
                             <Label htmlFor="active_for_deposit">Actif pour Dépôt</Label>
                             <Switch
                                 id="active_for_deposit"
@@ -410,6 +430,18 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                                 disabled={isPending}
                             />
                         </div>
+
+                        {formData.withdrawal_api === "connect" && (
+                            <div className="flex items-center justify-between space-x-2">
+                                <Label htmlFor="customer_pay_fee">Client paye les frais</Label>
+                                <Switch
+                                    id="customer_pay_fee"
+                                    checked={formData.customer_pay_fee}
+                                    onCheckedChange={(checked) => setFormData({ ...formData, customer_pay_fee: checked })}
+                                    disabled={isPending}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <DialogFooter>
