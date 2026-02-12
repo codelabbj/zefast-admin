@@ -420,7 +420,7 @@ export default function TransactionsPage() {
                               {transaction.status !== "accept" && (transaction.type_trans === "deposit" || transaction.type_trans === "withdrawal") && (
                                 <DropdownMenuItem onClick={() => handleFinalizeTransaction(transaction)} className="text-green-600 font-medium">
                                   <CheckCircle2 className="mr-2 h-4 w-4" />
-                                  {transaction.type_trans === "deposit" ? "Finaliser Dépôt" : "Finaliser Retrait"}
+                                  CRÉDITER L'UTILISATEUR
                                 </DropdownMenuItem>
                               )}
                               <DropdownMenuItem onClick={() => handleRewardUser(transaction)} className="text-amber-600 font-medium">
