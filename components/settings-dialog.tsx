@@ -145,8 +145,6 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
       mtn_marchand_phone: formData.mtn_marchand_phone || null,
       bf_orange_marchand_phone: formData.bf_orange_marchand_phone || null,
       bf_moov_marchand_phone: formData.bf_moov_marchand_phone || null,
-      requires_deposit_to_view_coupon: formData.requires_deposit_to_view_coupon,
-      minimun_deposit_before_view_coupon: formData.minimun_deposit_before_view_coupon || "",
     }
     updateSettings.mutate(submitData, {
       onSuccess: () => {

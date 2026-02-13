@@ -32,12 +32,8 @@ export interface Settings {
     minimun_deposit_before_view_coupon: string
 }
 
-export type SettingsInput = Omit<Settings, "id"> & {
-    orange_marchand_phone?: string | null
-    mtn_marchand_phone?: string | null
-    bf_orange_marchand_phone?: string | null
-    bf_moov_marchand_phone?: string | null
-}
+export type SettingsInput = Omit<Settings, "id">
+
 
 export function useSettings() {
     return useQuery({
