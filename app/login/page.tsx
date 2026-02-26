@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, Eye, EyeOff, Sparkles } from "lucide-react"
 import Image from "next/image"
-import logo from "@/public/logo.png"
 import { CONFIG } from "@/lib/config"
+
+const logoSrc = CONFIG.APP_LOGO_URL || "/logo.png"
 
 export default function LoginPage() {
   const [emailOrPhone, setEmailOrPhone] = useState("")
@@ -36,7 +37,7 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-center items-center text-white p-12 w-full">
           <div className="mb-8">
             <Image
-              src={CONFIG.APP_LOGO_URL ? CONFIG.APP_LOGO_URL : logo}
+              src={logoSrc}
               alt="logo"
               width={80}
               height={80}
@@ -74,7 +75,7 @@ export default function LoginPage() {
             <div className="inline-flex items-center justify-center w-20 h-16 rounded-xl bg-gradient-to-br from-primary to-accent mb-4 lg:hidden">
               {/* <Shield className="w-8 h-8 text-white" /> */}
               <Image
-                src={CONFIG.APP_LOGO_URL ? CONFIG.APP_LOGO_URL : logo}
+                src={logoSrc}
                 alt="logo"
                 width={80}
                 height={80}
