@@ -44,6 +44,10 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
         max_deposit: 100000,
         minimun_with: 300,
         max_win: 1000000,
+        manual_processing: false,
+        hash: null,
+        cashdeskid: null,
+        cashierpass: null,
     })
 
     useEffect(() => {
@@ -62,6 +66,10 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
                 max_deposit: platform.max_deposit,
                 minimun_with: platform.minimun_with,
                 max_win: platform.max_win,
+                manual_processing: platform.manual_processing,
+                hash: platform.hash,
+                cashdeskid: platform.cashdeskid,
+                cashierpass: platform.cashierpass,
             })
             setSelectedImage(platform.image)
         } else {
@@ -79,6 +87,10 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
                 max_deposit: 100000,
                 minimun_with: 300,
                 max_win: 1000000,
+                manual_processing: false,
+                hash: null,
+                cashdeskid: null,
+                cashierpass: null,
             })
             setSelectedImage(null)
         }
@@ -122,6 +134,10 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
                             max_deposit: 100000,
                             minimun_with: 300,
                             max_win: 1000000,
+                            manual_processing: false,
+                            hash: null,
+                            cashdeskid: null,
+                            cashierpass: null,
                         })
                         setSelectedImage(null)
                         setFile(null)
@@ -148,6 +164,10 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
                             max_deposit: 100000,
                             minimun_with: 300,
                             max_win: 1000000,
+                            manual_processing: false,
+                            hash: null,
+                            cashdeskid: null,
+                            cashierpass: null,
                         })
                         setSelectedImage(null)
                         setFile(null)
@@ -281,6 +301,46 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
                             />
                         </div>
 
+                        <div className="flex items-center justify-between space-x-2">
+                            <Label htmlFor="manual_processing">Traitement Manuel</Label>
+                            <Switch
+                                id="manual_processing"
+                                checked={formData.manual_processing}
+                                onCheckedChange={(checked) => setFormData({ ...formData, manual_processing: checked })}
+                                disabled={isPending}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="hash">Hash</Label>
+                            <Input
+                                id="hash"
+                                value={formData.hash || ""}
+                                onChange={(e) => setFormData({ ...formData, hash: e.target.value || null })}
+                                disabled={isPending}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="cashdeskid">Cash Desk ID</Label>
+                            <Input
+                                id="cashdeskid"
+                                value={formData.cashdeskid || ""}
+                                onChange={(e) => setFormData({ ...formData, cashdeskid: e.target.value || null })}
+                                disabled={isPending}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="cashierpass">Cashier Password</Label>
+                            <Input
+                                id="cashierpass"
+                                value={formData.cashierpass || ""}
+                                onChange={(e) => setFormData({ ...formData, cashierpass: e.target.value || null })}
+                                disabled={isPending}
+                            />
+                        </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="order">Ordre</Label>
                             <Input
@@ -300,6 +360,39 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
                                 id="enable"
                                 checked={formData.enable}
                                 onCheckedChange={(checked) => setFormData({ ...formData, enable: checked })}
+                                disabled={isPending}
+                            />
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="deposit_tuto_link">Lien tutoriel de dépôt (YouTube / Video)</Label>
+                            <Input
+                                id="deposit_tuto_link"
+                                placeholder="https://youtube.com/..."
+                                value={formData.deposit_tuto_link || ""}
+                                onChange={(e) => setFormData({ ...formData, deposit_tuto_link: e.target.value || null })}
+                                disabled={isPending}
+                            />
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="withdrawal_tuto_link">Lien tutoriel de retrait (YouTube / Video)</Label>
+                            <Input
+                                id="withdrawal_tuto_link"
+                                placeholder="https://youtube.com/..."
+                                value={formData.withdrawal_tuto_link || ""}
+                                onChange={(e) => setFormData({ ...formData, withdrawal_tuto_link: e.target.value || null })}
+                                disabled={isPending}
+                            />
+                        </div>
+
+                        <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="why_withdrawal_fail">Raison de l'échec du retrait (YouTube / Video)</Label>
+                            <Input
+                                id="why_withdrawal_fail"
+                                placeholder="https://youtube.com/..."
+                                value={formData.why_withdrawal_fail || ""}
+                                onChange={(e) => setFormData({ ...formData, why_withdrawal_fail: e.target.value || null })}
                                 disabled={isPending}
                             />
                         </div>

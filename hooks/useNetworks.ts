@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/axios"
 import { toast } from "react-hot-toast"
-import {AppFile} from "@/lib/types";
+import { AppFile } from "@/lib/types";
 
 export interface Network {
     id: number
@@ -19,10 +19,16 @@ export interface Network {
     withdrawal_api: string
     payment_by_link: boolean
     otp_required: boolean
+    manual_processing: boolean
     enable: boolean
     deposit_message: string
     active_for_deposit: boolean
     active_for_with: boolean
+    customer_pay_fee: boolean
+    payment_by_ussd_code: boolean
+    ussd_code: string
+    reduce_fee: boolean
+    fee_payin: number
 }
 
 export type NetworkInput = Omit<Network, "id" | "created_at">
@@ -41,7 +47,7 @@ export function useCreateNetwork() {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async ({data,file}:{data:NetworkInput,file?:File}) => {
+        mutationFn: async ({ data, file }: { data: NetworkInput, file?: File }) => {
             if (file) {
                 const uploadData = new FormData();
                 uploadData.append("file", file);
@@ -62,7 +68,7 @@ export function useUpdateNetwork() {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async ({ id, data, file }: { id: number; data: Partial<NetworkInput>, file?:File }) => {
+        mutationFn: async ({ id, data, file }: { id: number; data: Partial<NetworkInput>, file?: File }) => {
             if (file) {
                 const uploadData = new FormData();
                 uploadData.append("file", file);

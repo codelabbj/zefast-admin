@@ -11,20 +11,40 @@ export interface TransactionUser {
   email: string
 }
 
+export interface TransactionAppDetails {
+  id: string
+  name: string
+  image: string
+  enable: boolean
+  deposit_tuto_link: string | null
+  withdrawal_tuto_link: string | null
+  why_withdrawal_fail: string | null
+  order: number | null
+  city: string | null
+  street: string | null
+  minimun_deposit: number
+  max_deposit: number
+  minimun_with: number
+  max_win: number
+  active_for_deposit: boolean
+  active_for_with: boolean
+}
+
 export interface Transaction {
   id: number
   user: TransactionUser
+  app_details: TransactionAppDetails | null
   amount: number
   deposit_reward_amount: number | null
   reference: string
-  type_trans: "deposit" | "withdrawal"
-  status: "pending" | "accept" | "reject" | "timeout"
+  type_trans: "deposit" | "withdrawal" | "reward"
+  status: "pending" | "accept" | "reject" | "timeout" | "init_payment" | "error"
   created_at: string
   validated_at: string | null
   webhook_data: any
   wehook_receive_at: string | null
-  phone_number: string
-  user_app_id: string
+  phone_number: string | null
+  user_app_id: string | null
   withdriwal_code: string | null
   error_message: string | null
   transaction_link: string | null
@@ -32,7 +52,7 @@ export interface Transaction {
   otp_code: string | null
   public_id: string | null
   already_process: boolean
-  source: "mobile" | "web"
+  source: "mobile" | "web" | null
   old_status: string
   old_public_id: string
   success_webhook_send: boolean
@@ -41,7 +61,7 @@ export interface Transaction {
   timeout_webhook_send: boolean
   telegram_user: number | null
   app: string
-  network: number
+  network: number | null
 }
 
 export interface TransactionsResponse {
@@ -82,8 +102,20 @@ export interface CreateWithdrawalInput {
 }
 
 export interface ChangeStatusInput {
-  status: "accept" | "reject" | "pending"
   reference: string
+}
+
+export interface CheckStatusInput {
+  reference: string
+}
+
+export interface ProcessTransactionInput {
+  reference: string
+}
+
+export interface UpdateTransactionStatusInput {
+  reference: string
+  new_status: string
 }
 
 export function useTransactions(filters: TransactionFilters = {}) {
@@ -131,11 +163,75 @@ export function useChangeTransactionStatus() {
 
   return useMutation({
     mutationFn: async (data: ChangeStatusInput) => {
-      const res = await api.post("/mobcash/change-transaction", data)
+      const res = await api.post(`/mobcash/change-transaction`, { reference: data.reference })
       return res.data
     },
     onSuccess: () => {
-      toast.success("Transaction status updated successfully!")
+      toast.success("Statut de la transaction mis à jour avec succès!")
+      queryClient.invalidateQueries({ queryKey: ["transactions"] })
+    },
+  })
+}
+
+export function useCheckTransactionStatus() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: CheckStatusInput) => {
+      const res = await api.get(`/mobcash/show-transaction-status?reference=${data.reference}`)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success("Statut vérifié avec succès!")
+      queryClient.invalidateQueries({ queryKey: ["transactions"] })
+    },
+  })
+}
+
+export function useProcessTransaction() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: ProcessTransactionInput) => {
+      const res = await api.post(`/mobcash/process-transaction`, data)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success("Transaction traitée avec succès!")
+      queryClient.invalidateQueries({ queryKey: ["transactions"] })
+    },
+  })
+}
+
+export function useUpdateTransactionStatus() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: UpdateTransactionStatusInput) => {
+      const res = await api.post(`/mobcash/update-transaction-status`, data)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success("Statut de la transaction mis à jour avec succès!")
+      queryClient.invalidateQueries({ queryKey: ["transactions"] })
+    },
+  })
+}
+
+export interface FinalizeDepositPayload {
+  reference: string
+}
+
+export function useFinalizeTransaction() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: FinalizeDepositPayload) => {
+      const res = await api.post<Transaction>("/mobcash/finalize-transaction", data)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success("Transaction finalisée avec succès!")
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
     },
   })

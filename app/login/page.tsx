@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, Eye, EyeOff, Sparkles } from "lucide-react"
-import Image from "next/image";
-import logo from "@/public/logo.png"
+import Image from "next/image"
+import { CONFIG } from "@/lib/config"
+
+const logoSrc = CONFIG.APP_LOGO_URL || "/logo.png"
 
 export default function LoginPage() {
   const [emailOrPhone, setEmailOrPhone] = useState("")
@@ -27,22 +29,28 @@ export default function LoginPage() {
       {/* Left Side - Visual Design */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-primary via-accent to-primary/50">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20"></div>
-        
+
         {/* Animated background elements */}
         <div className="absolute top-20 left-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        
+
         <div className="relative z-10 flex flex-col justify-center items-center text-white p-12 w-full">
           <div className="mb-8">
-              <Image src={logo} alt="logo" className="w-20 h-20 rounded-lg border-white/20 mb-6" />
+            <Image
+              src={logoSrc}
+              alt="logo"
+              width={80}
+              height={80}
+              className="w-20 h-20 rounded-lg border-white/20 mb-6"
+            />
             <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-              Zefast Admin
+              {CONFIG.APP_NAME}
             </h1>
             <p className="text-xl text-white/90 max-w-md">
               Plateforme d'administration sécurisée pour gérer votre écosystème financier
             </p>
           </div>
-          
+
           <div className="mt-12 space-y-4 w-full max-w-md">
             <div className="flex items-center gap-3 text-white/80">
               <div className="w-2 h-2 rounded-full bg-white/60"></div>
@@ -64,8 +72,15 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center lg:text-left">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-primary to-accent mb-4 lg:hidden">
+            <div className="inline-flex items-center justify-center w-20 h-16 rounded-xl bg-gradient-to-br from-primary to-accent mb-4 lg:hidden">
               {/* <Shield className="w-8 h-8 text-white" /> */}
+              <Image
+                src={logoSrc}
+                alt="logo"
+                width={80}
+                height={80}
+                className="w-20 h-20 rounded-lg border-white/20 mb-6"
+              />
             </div>
             <h2 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Connexion
@@ -92,7 +107,7 @@ export default function LoginPage() {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-semibold">
                   Mot de passe
@@ -122,10 +137,10 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full h-12 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300" 
+
+              <Button
+                type="submit"
+                className="w-full h-12 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
                 disabled={login.isPending}
               >
                 {login.isPending ? (
@@ -135,7 +150,7 @@ export default function LoginPage() {
                   </>
                 ) : (
                   <>
-                    <Sparkles className="mr-2 h-5 w-5" />
+                    {/* <Sparkles className="mr-2 h-5 w-5" /> */}
                     Se connecter
                   </>
                 )}

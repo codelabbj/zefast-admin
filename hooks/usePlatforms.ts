@@ -20,6 +20,10 @@ export interface Platform {
     max_deposit: number
     minimun_with: number
     max_win: number
+    manual_processing: boolean
+    hash?: string | null
+    cashdeskid?: string | null
+    cashierpass?: string | null
 }
 
 export interface PlatformFilters {
@@ -54,7 +58,13 @@ export function useCreatePlatform() {
                 const uploadedFile = (await api.post<AppFile>('/mobcash/upload', uploadData)).data
                 data.image = uploadedFile.file
             }
-            const res = await api.post<Platform>("/mobcash/plateform", data)
+            // Only include optional fields if they have values
+            const payload: any = { ...data }
+            if (!data.hash || data.hash.trim() === '') delete payload.hash
+            if (!data.cashdeskid || data.cashdeskid.trim() === '') delete payload.cashdeskid
+            if (!data.cashierpass || data.cashierpass.trim() === '') delete payload.cashierpass
+
+            const res = await api.post<Platform>("/mobcash/plateform", payload)
             return res.data
         },
         onSuccess: () => {
@@ -69,7 +79,13 @@ export function useUpdatePlatform() {
 
     return useMutation({
         mutationFn: async ({ id, data }: { id: string; data: Partial<PlatformInput> }) => {
-            const res = await api.put<Platform>(`/mobcash/plateform/${id}`, data)
+            // Only include optional fields if they have values
+            const payload: any = { ...data }
+            if (data.hash !== undefined && (!data.hash || data.hash.trim() === '')) delete payload.hash
+            if (data.cashdeskid !== undefined && (!data.cashdeskid || data.cashdeskid.trim() === '')) delete payload.cashdeskid
+            if (data.cashierpass !== undefined && (!data.cashierpass || data.cashierpass.trim() === '')) delete payload.cashierpass
+
+            const res = await api.put<Platform>(`/mobcash/plateform/${id}`, payload)
             return res.data
         },
         onSuccess: () => {

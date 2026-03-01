@@ -1,8 +1,8 @@
 "use client"
 
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/axios"
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 export interface Settings {
     id: number
@@ -11,6 +11,7 @@ export interface Settings {
     bonus_percent: string
     reward_mini_withdrawal: string
     whatsapp_phone: string | null
+    telegram: string | null
     minimum_solde: string | null
     referral_bonus: boolean
     deposit_reward: boolean
@@ -21,9 +22,18 @@ export interface Settings {
     wave_default_link: string | null
     orange_default_link: string | null
     mtn_default_link: string | null
+    moov_marchand_phone: string | null
+    orange_marchand_phone: string | null
+    mtn_marchand_phone: string | null
+    bf_orange_marchand_phone: string | null
+    bf_moov_marchand_phone: string | null
+    connect_pro_base_url: string | null
+    requires_deposit_to_view_coupon: boolean
+    minimun_deposit_before_view_coupon: string
 }
 
 export type SettingsInput = Omit<Settings, "id">
+
 
 export function useSettings() {
     return useQuery({
