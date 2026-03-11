@@ -100,6 +100,7 @@ export default function NetworksPage() {
                       <TableHead className="font-semibold text-muted-foreground">Statut</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Dépôt</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Retrait</TableHead>
+                      {/* <TableHead className="font-semibold text-muted-foreground">Code USSD</TableHead> */}
                       <TableHead className="text-right font-semibold text-muted-foreground">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -128,6 +129,15 @@ export default function NetworksPage() {
                             {network.active_for_with ? "Oui" : "Non"}
                           </Badge>
                         </TableCell>
+                        {/* <TableCell>
+                          {network.payment_by_ussd_code && network.ussd_code ? (
+                            <Badge variant="outline" className="font-mono text-xs">
+                              {network.ussd_code}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">—</span>
+                          )}
+                        </TableCell> */}
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
