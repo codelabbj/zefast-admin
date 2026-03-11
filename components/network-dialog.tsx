@@ -418,15 +418,6 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2">
-                        <div className="flex items-center justify-between space-x-2">
-                            <Label htmlFor="enable">Activer</Label>
-                            <Switch
-                                id="enable"
-                                checked={formData.enable}
-                                onCheckedChange={(checked) => setFormData({ ...formData, enable: checked })}
-                                disabled={isPending}
-                            />
-                        </div>
 
                         <div className="flex items-center justify-between space-x-2">
                             <Label htmlFor="payment_by_link">Paiement par Lien</Label>

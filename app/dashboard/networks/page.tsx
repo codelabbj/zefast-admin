@@ -97,7 +97,6 @@ export default function NetworksPage() {
                       <TableHead className="font-semibold text-muted-foreground h-12">Nom</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Nom Public</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Pays</TableHead>
-                      <TableHead className="font-semibold text-muted-foreground">Statut</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Dépôt</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Retrait</TableHead>
                       {/* <TableHead className="font-semibold text-muted-foreground">Code USSD</TableHead> */}
@@ -112,11 +111,6 @@ export default function NetworksPage() {
                         <TableCell>
                           <Badge variant="outline">
                             {network.country_code} (+{network.indication})
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={network.enable ? "default" : "secondary"}>
-                            {network.enable ? "Actif" : "Inactif"}
                           </Badge>
                         </TableCell>
                         <TableCell>
