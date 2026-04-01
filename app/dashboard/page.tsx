@@ -1,535 +1,368 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-    Users,
-    Network,
-    ArrowLeftRight,
-    Wallet,
-    Gift,
-    Bot,
-    Share2, Award, DollarSign, Megaphone, Ticket, UserPlus
-} from "lucide-react"
-import {useDashboardStats} from "@/hooks/useDashboardStats";
-import {useEffect, useState} from "react";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {UsersChart} from "@/components/users-chart";
-import {TransactionsChart} from "@/components/transactions-chart";
-import {BotTransactionsChart} from "@/components/bot-transactions-chart";
+import { Users, Network, ArrowLeftRight, Wallet, TrendingUp, UserCheck, UserX, Bot, Gift, CreditCard, DollarSign, Receipt, Share2, Award, Megaphone, BarChart3, Smartphone, Globe } from "lucide-react"
+import { useStatistics } from "@/hooks/useStatistics"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { CONFIG } from "@/lib/config"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
+
+function formatNumber(num: number): string {
+  return new Intl.NumberFormat("fr-FR").format(num)
+}
+
+function formatDate(dateString: string): string {
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })
+  } catch {
+    return dateString
+  }
+}
 
 export default function DashboardPage() {
-    const { data, isLoading, isError } = useDashboardStats()
+  const { data: statistics, isLoading } = useStatistics()
 
-    const stats = data?.dashboard_stats
-    const transactionsByApp = stats?.transactions_by_app ?? {}
-    const networksCount = Object.keys(transactionsByApp).length
-    const volume = data?.volume_transactions
-    const userGrowth = data?.user_growth
-    const referral = data?.referral_system
-    const [volumeChart, setVolumeChart] = useState<{date: string
-        type_trans: string
-        total_amount: number
-        count: number}[]>([])
-    const [userChart, setUserChart] = useState<{
-        date: string
-        count: number
-    }[]>([])
-    const [volumePeriod, setVolumePeriod] = useState<"monthly"|"yearly"|"daily"|"weekly">("monthly")
-    const [usersPeriod, setUsersPeriod] = useState<"monthly"|"daily"|"weekly">("monthly")
+  const stats = [
+    {
+      title: "Solde Net",
+      value: statistics?.volume_transactions.net_volume ? `${formatNumber(statistics.volume_transactions.net_volume)} FCFA` : "-",
+      description: "Solde net des transactions",
+      icon: TrendingUp,
+      iconColor: "text-emerald-600",
+      iconBg: "bg-emerald-600/10",
+    },
+    {
+      title: "Total Utilisateurs",
+      value: statistics?.dashboard_stats.total_users ?? "-",
+      description: "Utilisateurs enregistrés",
+      icon: Users,
+      iconColor: "text-primary",
+      iconBg: "bg-primary/10",
+    },
+    {
+      title: "Utilisateurs Actifs",
+      value: statistics?.dashboard_stats.active_users ?? "-",
+      description: "Utilisateurs actifs",
+      icon: UserCheck,
+      iconColor: "text-green-600",
+      iconBg: "bg-green-600/10",
+    },
+    {
+      title: "Total Transactions",
+      value: statistics?.dashboard_stats.total_transactions ?? "-",
+      description: "Toutes les transactions",
+      icon: ArrowLeftRight,
+      iconColor: "text-primary",
+      iconBg: "bg-primary/10",
+    },
+    {
+      title: "Total Bonus",
+      value: statistics?.dashboard_stats.total_bonus ? `${formatNumber(statistics.dashboard_stats.total_bonus)} FCFA` : "-",
+      description: "Bonus distribués",
+      icon: Gift,
+      iconColor: "text-yellow-600",
+      iconBg: "bg-yellow-600/10",
+    },
+    {
+      title: "Utilisateurs Bot",
+      value: statistics?.dashboard_stats.bot_stats.total_users ?? "-",
+      description: "Utilisateurs du bot",
+      icon: Bot,
+      iconColor: "text-purple-600",
+      iconBg: "bg-purple-600/10",
+    },
+    {
+      title: "Publicités Actives",
+      value: statistics?.dashboard_stats.advertisements.active ?? "-",
+      description: `${statistics?.dashboard_stats.advertisements.total ? "sur " + statistics.dashboard_stats.advertisements.total + " total" : ""}`,
+      icon: Megaphone,
+      iconColor: "text-cyan-600",
+      iconBg: "bg-cyan-600/10",
+    },
+    {
+      title: "Parrainages",
+      value: statistics?.referral_system.parrainages_count ?? "-",
+      description: `${statistics?.referral_system.total_referral_bonus ? formatNumber(statistics.referral_system.total_referral_bonus) + " FCFA bonus" : ""}`,
+      icon: Share2,
+      iconColor: "text-teal-600",
+      iconBg: "bg-teal-600/10",
+    },
+  ]
 
-    useEffect(() => {
-        if (!volume) return
-        switch (volumePeriod){
-            case "weekly":
-                setVolumeChart(volume.evolution.weekly.map(
-                    (v)=> {
-                        return {
-                            date: new Date(v.week).toLocaleDateString(),
-                            type_trans: v.type_trans,
-                            total_amount: v.total_amount,
-                            count: v.count,
-                        }
-                    }
+  return (
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+          Tableau de Bord
+        </h2>
+        <p className="text-muted-foreground text-lg">Bienvenue sur le tableau de bord administrateur {CONFIG.APP_NAME}</p>
+      </div>
 
-                ))
-                break
-            case "monthly":
-                setVolumeChart(volume.evolution.monthly.map(
-                    (v)=> {
-                        return {
-                            date: new Date(v.month).toLocaleString("fr",{month:"long"}).toUpperCase(),
-                            type_trans: v.type_trans,
-                            total_amount: v.total_amount,
-                            count: v.count,
-                        }
-                    }
+      {isLoading ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Card key={i} className="border border-border/50 bg-card">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-10 w-10 rounded-lg" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-24 mb-3" />
+                <Skeleton className="h-4 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {stats.map((stat) => {
+              const Icon = stat.icon
+              return (
+                <Card
+                  key={stat.title}
+                  className="group relative border border-border/50 bg-card hover:border-primary/30 transition-all duration-200 hover:shadow-md"
+                >
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                    <CardTitle className="text-sm font-semibold text-muted-foreground">
+                      {stat.title}
+                    </CardTitle>
+                    <div className={`p-2.5 rounded-lg ${stat.iconBg} ${stat.iconColor} transition-colors`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-baseline gap-2">
+                      <div className="text-3xl font-bold text-foreground">
+                        {stat.value}
+                      </div>
+                      <TrendingUp className="h-4 w-4 text-muted-foreground/60" />
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-3 font-medium">{stat.description}</p>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
 
-                ))
-                break
-            case "yearly":
-                setVolumeChart(volume.evolution.yearly.map(
-                    (v)=> {
-                        return {
-                            date:new Date(v.year).getFullYear().toString(),
-                            type_trans: v.type_trans,
-                            total_amount: v.total_amount,
-                            count: v.count,
-                        }
-                    }
-
-                ))
-                break
-            case "daily":
-                setVolumeChart(volume.evolution.daily.map(
-                    (v)=> {
-                        return {
-                            date: new Date(v.date).toLocaleDateString(),
-                            type_trans: v.type_trans,
-                            total_amount: v.total_amount,
-                            count: v.count,
-                        }
-                    }
-
-                ))
-        }
-
-    },[volume,volumePeriod])
-
-    useEffect(() => {
-        if (!userGrowth) return
-        switch (usersPeriod){
-            case "weekly":
-                setUserChart(userGrowth.new_users.weekly.map(
-                    (v)=> {
-                        return {
-                            date: new Date(v.week).toLocaleDateString(),
-                            count: v.count
-                        }
-                    }
-
-                ))
-                break
-            case "monthly":
-                setUserChart(userGrowth.new_users.monthly.map(
-                    (v)=> {
-                        return {
-                            date: new Date(v.month).toLocaleString("fr",{month:"long"}).toUpperCase(),
-                            count: v.count,
-                        }
-                    }
-
-                ))
-                break
-            case "daily":
-                setUserChart(userGrowth.new_users.daily.map(
-                    (v)=> {
-                        return {
-                            date: new Date(v.date).toLocaleDateString(),
-                            count: v.count,
-                        }
-                    }
-
-                ))
-        }
-
-    },[userGrowth,usersPeriod])
-
-    function formatNumber(value: number | undefined | null) {
-        if (value === undefined || value === null || Number.isNaN(value)) return "-"
-        return new Intl.NumberFormat("fr-FR").format(value)
-    }
-
-    function formatCurrency(value: number | undefined | null) {
-        if (value === undefined || value === null || Number.isNaN(value)) return "-"
-        return `${formatNumber(value)} FCFA`
-    }
-
-
-
-    return (
-        <div className="space-y-6">
-            <div className="space-y-2">
-                <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                    Tableau de Bord
-                </h2>
-                <p className="text-muted-foreground text-lg">Bienvenue sur le tableau de bord administrateur FASTXOF</p>
-            </div>
-
-            {isError && (
-                <div className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
-                    Une erreur est survenue lors du chargement des statistiques.
+          {/* Transactions by App */}
+          {statistics?.dashboard_stats.transactions_by_app && Object.keys(statistics.dashboard_stats.transactions_by_app).length > 0 && (
+            <Card className="border border-border/50 bg-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  Transactions par Application
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Application</TableHead>
+                        <TableHead className="text-right">Dépôts (Nbr)</TableHead>
+                        <TableHead className="text-right">Dépôts (Total)</TableHead>
+                        <TableHead className="text-right">Retraits (Nbr)</TableHead>
+                        <TableHead className="text-right">Retraits (Total)</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {Object.entries(statistics.dashboard_stats.transactions_by_app).map(([app, data]) => (
+                        <TableRow key={app}>
+                          <TableCell className="font-medium">{app}</TableCell>
+                          <TableCell className="text-right">{data.deposit?.count ?? 0}</TableCell>
+                          <TableCell className="text-right text-emerald-600 font-medium whitespace-nowrap">
+                            {formatNumber(data.deposit?.total_amount ?? 0)} FCFA
+                          </TableCell>
+                          <TableCell className="text-right">{data.withdrawal?.count ?? 0}</TableCell>
+                          <TableCell className="text-right text-orange-600 font-medium whitespace-nowrap">
+                            {formatNumber(data.withdrawal?.total_amount ?? 0)} FCFA
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Transaction Evolution Charts */}
+          {statistics?.volume_transactions.evolution.daily && statistics.volume_transactions.evolution.daily.length > 0 && (
+            <div className="grid gap-6">
+              <Card className="border border-border/50 bg-card overflow-hidden">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Évolution des Transactions (Quotidien)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="h-[400px] w-full pt-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={Object.values(
+                        statistics.volume_transactions.evolution.daily.reduce((acc: any, curr) => {
+                          if (!acc[curr.date]) {
+                            acc[curr.date] = { date: curr.date, deposit: 0, withdrawal: 0 }
+                          }
+                          acc[curr.date][curr.type_trans] = curr.total_amount
+                          return acc
+                        }, {})
+                      ).slice(-15)}
+                      margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#88888820" vertical={false} />
+                      <XAxis
+                        dataKey="date"
+                        tickFormatter={(value) => {
+                          const date = new Date(value);
+                          return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+                        }}
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        minTickGap={30}
+                      />
+                      <YAxis
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(value) => `${formatNumber(value)}`}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
+                          borderColor: 'hsl(var(--border))',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }}
+                        itemStyle={{ fontSize: '12px' }}
+                        labelStyle={{ fontWeight: 'bold', marginBottom: '4px', color: 'hsl(var(--foreground))' }}
+                        labelFormatter={(value) => formatDate(value)}
+                        formatter={(value: number) => [`${formatNumber(value)} FCFA`]}
+                      />
+                      <Legend verticalAlign="top" height={36} />
+                      <Line
+                        type="monotone"
+                        dataKey="deposit"
+                        name="Dépôts"
+                        stroke="#10b981"
+                        strokeWidth={3}
+                        dot={{ r: 4, fill: "#10b981", strokeWidth: 2 }}
+                        activeDot={{ r: 6, strokeWidth: 0 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="withdrawal"
+                        name="Retraits"
+                        stroke="#f97316"
+                        strokeWidth={3}
+                        dot={{ r: 4, fill: "#f97316", strokeWidth: 2 }}
+                        activeDot={{ r: 6, strokeWidth: 0 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* User Growth and Source */}
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Users by Source */}
+            {statistics?.user_growth.users_by_source && statistics.user_growth.users_by_source.length > 0 && (
+              <Card className="border border-border/50 bg-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Utilisateurs par Source
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {statistics.user_growth.users_by_source.map((source) => (
+                      <div key={source.source} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {source.source === "mobile" && <Smartphone className="h-4 w-4 text-muted-foreground" />}
+                          {source.source === "web" && <Globe className="h-4 w-4 text-muted-foreground" />}
+                          {source.source === "bot" && <Bot className="h-4 w-4 text-muted-foreground" />}
+                          <span className="font-medium capitalize">{source.source}</span>
+                        </div>
+                        <span className="text-lg font-bold">{source.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
-            {/* Main Stats Cards */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="hover:shadow-lg transition-shadow duration-300 border-0 bg-stat-card-rust">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                        <CardTitle className="text-sm font-medium text-white">Total Utilisateurs</CardTitle>
-                        <div className="p-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 shadow-lg">
-                            <Users className="h-6 w-6 text-white" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {isLoading ? "N/A" : formatNumber(stats?.total_users)}
-                        </div>
-                        <p className="text-xs text-white/70">
-                            {isLoading
-                                ? "Chargement..."
-                                : `${formatNumber(stats?.active_users)} actifs / ${formatNumber(stats?.inactive_users)} inactifs`}
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow duration-300 border-0 bg-stat-card-orange">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                        <CardTitle className="text-sm font-medium text-white">Transactions Total</CardTitle>
-                        <div className="p-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 shadow-lg">
-                            <ArrowLeftRight className="h-6 w-6 text-white" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {isLoading ? "N/A" : formatNumber(stats?.total_transactions)}
-                        </div>
-                        <p className="text-xs text-white/70">
-                            {isLoading ? "Chargement..." : "Toutes transactions confondues"}
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow duration-300 border-0 bg-stat-card-dark">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                        <CardTitle className="text-sm font-medium text-white">Solde Net</CardTitle>
-                        <div className="p-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 shadow-lg">
-                            <Wallet className="h-6 w-6 text-white" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {isLoading ? "N/A" : formatCurrency(volume?.net_volume)}
-                        </div>
-                        <p className="text-xs text-white/70">
-                            {isLoading
-                                ? "Chargement..."
-                                : `${formatCurrency(volume?.deposits?.total_amount)} dépôts / ${formatCurrency(
-                                    volume?.withdrawals?.total_amount,
-                                )} retraits`}
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow duration-300 border-0 bg-stat-card-amber">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                        <CardTitle className="text-sm font-medium text-white">Total Bonus</CardTitle>
-                        <div className="p-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 shadow-lg">
-                            <Gift className="h-6 w-6 text-white" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {isLoading ? "N/A" : formatCurrency(stats?.total_bonus)}
-                        </div>
-                        <p className="text-xs text-white/70">
-                            {isLoading ? "Chargement..." : "Bonus distribués"}
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Rewards, Disbursements, Ads & Coupons */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="hover:shadow-lg transition-shadow duration-300 border-0 bg-stat-card-emerald">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                        <CardTitle className="text-sm font-medium text-white">Récompenses</CardTitle>
-                        <div className="p-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 shadow-lg">
-                            <Award className="h-6 w-6 text-white" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {isLoading ? "N/A" : formatCurrency(stats?.rewards?.total)}
-                        </div>
-                        <p className="text-xs text-white/70">Total des récompenses</p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow duration-300 border-0 bg-stat-card-purple">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                        <CardTitle className="text-sm font-medium text-white">Décaissements</CardTitle>
-                        <div className="p-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 shadow-lg">
-                            <DollarSign className="h-6 w-6 text-white" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {isLoading ? "N/A" : formatCurrency(stats?.disbursements?.amount)}
-                        </div>
-                        <p className="text-xs text-white/70">
-                            {isLoading
-                                ? "Chargement..."
-                                : `${formatNumber(stats?.disbursements?.count)} décaissements`}
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow duration-300 border-0 bg-stat-card-rose">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                        <CardTitle className="text-sm font-medium text-white">Publicités</CardTitle>
-                        <div className="p-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 shadow-lg">
-                            <Megaphone className="h-6 w-6 text-white" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {isLoading ? "N/A" : formatNumber(stats?.advertisements?.total)}
-                        </div>
-                        <p className="text-xs text-white/70">
-                            {isLoading
-                                ? "Chargement..."
-                                : `${formatNumber(stats?.advertisements?.active)} actives`}
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow duration-300 border-0 bg-stat-card-cyan">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                        <CardTitle className="text-sm font-medium text-white">Coupons</CardTitle>
-                        <div className="p-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 shadow-lg">
-                            <Ticket className="h-6 w-6 text-white" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-white">
-                            {isLoading ? "N/A" : formatNumber(stats?.coupons?.total)}
-                        </div>
-                        <p className="text-xs text-white/70">
-                            {isLoading
-                                ? "Chargement..."
-                                : `${formatNumber(stats?.coupons?.active)} actifs`}
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="grid gap-4 lg:grid-cols-4">
-                {/* Bot Statistics with Donut Chart */}
-                <Card className="hover:shadow-lg transition-shadow duration-300">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <div className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20">
-                                <Bot className="h-5 w-5 text-primary" />
-                            </div>
-                            Statistiques Bot
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {isLoading ? (
-                            <p className="text-sm text-muted-foreground text-center py-8">Chargement...</p>
-                        ) : (
-                            <BotTransactionsChart
-                                totalTransactions={stats?.bot_stats?.total_transactions ?? 0}
-                                totalDeposits={stats?.bot_stats?.total_deposits ?? 0}
-                                totalWithdrawals={stats?.bot_stats?.total_withdrawals ?? 0}
-                            />
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Users by Source with Progress Bars */}
-                <Card className="hover:shadow-lg transition-shadow duration-300">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <div className="p-2 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20">
-                                <UserPlus className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
-                            </div>
-                            Utilisateurs par Source
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        {isLoading ? (
-                            <p className="text-sm text-muted-foreground">Chargement...</p>
-                        ) : (
-                            <>
-                                {userGrowth?.users_by_source?.map((source) => {
-                                    const percentage = userGrowth.active_users_count ? (source.count / userGrowth.active_users_count) * 100 : 0
-                                    return (
-                                        <div key={source.source} className="space-y-2">
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-sm font-medium capitalize text-foreground">{source.source}</span>
-                                                <span className="text-xs font-semibold text-primary">{percentage.toFixed(1)}%</span>
-                                            </div>
-                                            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                                                <div
-                                                    className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500"
-                                                    style={{ width: `${percentage}%` }}
-                                                />
-                                            </div>
-                                            <p className="text-xs text-muted-foreground">{formatNumber(source.count)} utilisateurs</p>
-                                        </div>
-                                    )
-                                })}
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Transactions by App */}
-                <Card className="hover:shadow-lg transition-shadow duration-300">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20">
-                                <Network className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            Transactions par Application
-                        </CardTitle>
-                        <p className="text-xs text-muted-foreground mt-2">{networksCount} application{networksCount > 1 ? 's' : ''}</p>
-                    </CardHeader>
-                    <CardContent>
-                        {isLoading ? (
-                            <p className="text-sm text-muted-foreground">Chargement...</p>
-                        ) : Object.keys(transactionsByApp).length === 0 ? (
-                            <p className="text-sm text-muted-foreground">Aucune transaction par application</p>
-                        ) : (
-                            <div className="space-y-4">
-                                {Object.entries(transactionsByApp).map(([app, data], index) => {
-                                    const totalAmount = Object.values(transactionsByApp).reduce((sum: number, item: any) => sum + item.total_amount, 0)
-                                    const percentage = totalAmount > 0 ? (data.total_amount / totalAmount) * 100 : 0
-
-                                    return (
-                                        <div key={app} className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2 flex-1">
-                                                    <div className={`w-2 h-2 rounded-full ${index % 4 === 0 ? 'bg-blue-500' : index % 4 === 1 ? 'bg-indigo-500' : index % 4 === 2 ? 'bg-purple-500' : 'bg-violet-500'}`} />
-                                                    <span className="text-sm font-medium text-foreground capitalize">{app}</span>
-                                                </div>
-                                                <span className="text-xs font-semibold text-primary">{percentage.toFixed(1)}%</span>
-                                            </div>
-                                            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                                                <div
-                                                    className={`h-full transition-all duration-500 ${
-                                                        index % 4 === 0 ? 'bg-gradient-to-r from-blue-500 to-cyan-500' :
-                                                            index % 4 === 1 ? 'bg-gradient-to-r from-indigo-500 to-blue-500' :
-                                                                index % 4 === 2 ? 'bg-gradient-to-r from-purple-500 to-indigo-500' :
-                                                                    'bg-gradient-to-r from-violet-500 to-purple-500'
-                                                    }`}
-                                                    style={{ width: `${percentage}%` }}
-                                                />
-                                            </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-xs text-muted-foreground">{formatNumber(data.count)} transactions</span>
-                                                <span className="text-sm font-semibold text-foreground">{formatCurrency(data.total_amount)}</span>
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Referral System */}
-                <Card className="hover:shadow-lg transition-shadow duration-300">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/20">
-                                <Share2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                            </div>
-                            Système de Parrainage
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        {isLoading ? (
-                            <p className="text-sm text-muted-foreground">Chargement...</p>
-                        ) : (
-                            <>
-                                <div className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
-                                    <p className="text-xs text-muted-foreground mb-1">Parrainages Actifs</p>
-                                    <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
-                                        {formatNumber(referral?.parrainages_count)}
-                                    </p>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <p className="text-xs text-muted-foreground">Bonus Total Distribué</p>
-                                    <p className="text-2xl font-bold text-primary">
-                                        {formatCurrency(referral?.total_referral_bonus)}
-                                    </p>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <p className="text-xs text-muted-foreground">Taux d'Activation</p>
-                                        <span className="text-sm font-bold text-accent">{formatNumber(referral?.activation_rate)}%</span>
-                                    </div>
-                                    <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500"
-                                            style={{ width: `${Math.min(referral?.activation_rate ?? 0, 100)}%` }}
-                                        />
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center gap-2 justify-between">
-                            <CardTitle>Evolution des transaction</CardTitle>
-                            <Select defaultValue="daily" value={volumePeriod} onValueChange={(s)=>setVolumePeriod(s as "monthly"|"yearly"|"daily"|"weekly")}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Selectionner une période"/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="daily">Journalier</SelectItem>
-                                    <SelectItem value="weekly">Hebdomadaire</SelectItem>
-                                    <SelectItem value="monthly">Mensuel</SelectItem>
-                                    <SelectItem value="yearly">Annuel</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                    </CardHeader>
-                    <CardContent>
-                        <TransactionsChart data={volumeChart}/>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center gap-2 justify-between">
-                            <CardTitle>Evolution des utilisateurs</CardTitle>
-                            <Select defaultValue="daily" value={usersPeriod} onValueChange={(s)=>setUsersPeriod(s as "monthly"|"daily"|"weekly")}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Selectionner une période"/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="daily">Journalier</SelectItem>
-                                    <SelectItem value="weekly">Hebdomadaire</SelectItem>
-                                    <SelectItem value="monthly">Mensuel</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                    </CardHeader>
-                    <CardContent>
-                        <UsersChart data={userChart}/>
-                    </CardContent>
-                </Card>
-            </div>
+            {/* User Status Breakdown */}
+            {statistics?.user_growth.status && (
+              <Card className="border border-border/50 bg-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <UserCheck className="h-5 w-5" />
+                    Statut des Utilisateurs
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-green-600">Actifs</span>
+                      <span className="text-lg font-bold">{statistics.user_growth.status.active}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-gray-600">Inactifs</span>
+                      <span className="text-lg font-bold">{statistics.user_growth.status.inactive}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-red-600">Bloqués</span>
+                      <span className="text-lg font-bold">{statistics.user_growth.status.blocked}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
 
 
-            {/* User Growth & Referral */}
-            {/*
-
-
-            */}
-
-        </div>
-    )
+          {/* User Growth - Recent Daily */}
+          {statistics?.user_growth.new_users.daily && statistics.user_growth.new_users.daily.length > 0 && (
+            <Card className="border border-border/50 bg-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Nouveaux Utilisateurs (Quotidien)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead className="text-right">Nouveaux Utilisateurs</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {statistics.user_growth.new_users.daily.slice(-10).map((item, index) => (
+                        <TableRow key={`${item.date}-${index}`}>
+                          <TableCell>{formatDate(item.date)}</TableCell>
+                          <TableCell className="text-right font-bold">{item.count}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
+    </div>
+  )
 }
