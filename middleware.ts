@@ -3,14 +3,25 @@ import type { NextRequest } from "next/server"
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("access_token")?.value
-  const isLogin = req.nextUrl.pathname.startsWith("/login")
-  const isPublic = req.nextUrl.pathname === "/"
+  const { pathname } = req.nextUrl
 
-  if (!token && !isLogin && !isPublic) {
+  // Allow static files and api
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/favicon.ico')
+  ) {
+    return NextResponse.next()
+  }
+
+  const isLoginPage = pathname === "/login"
+  const isRootPage = pathname === "/"
+
+  if (!token && !isLoginPage && !isRootPage) {
     return NextResponse.redirect(new URL("/login", req.url))
   }
 
-  if (token && isLogin) {
+  if (token && isLoginPage) {
     return NextResponse.redirect(new URL("/dashboard", req.url))
   }
 
@@ -18,5 +29,6 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/:path*"],
 }
+
