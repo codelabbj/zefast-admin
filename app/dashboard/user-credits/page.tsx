@@ -16,6 +16,8 @@ interface Credit {
   user: string;
   user_email: string;
   user_fullname: string;
+  phones: string[];
+  user_app_ids: string[];
   amount: number;
   note: string;
   created_at: string;
@@ -114,6 +116,8 @@ export default function UserCreditsPage() {
   const [formData, setFormData] = useState({
     id: "",
     user: "",
+    phones: "",
+    user_app_ids: "",
     amount: "" as number | string,
     note: ""
   })
@@ -143,9 +147,16 @@ export default function UserCreditsPage() {
   const handleOpenDialog = (mode: "create" | "update", item?: Credit) => {
     setDialogMode(mode)
     if (mode === "create") {
-      setFormData({ id: "", user: "", amount: "", note: "" })
+      setFormData({ id: "", user: "", phones: "", user_app_ids: "", amount: "", note: "" })
     } else if (item) {
-      setFormData({ id: item.id, user: item.user, amount: item.amount, note: item.note || "" })
+      setFormData({ 
+        id: item.id, 
+        user: item.user || "", 
+        phones: item.phones ? item.phones.join(", ") : "",
+        user_app_ids: item.user_app_ids ? item.user_app_ids.join(", ") : "",
+        amount: item.amount, 
+        note: item.note || "" 
+      })
     }
     setIsDialogOpen(true)
   }
@@ -154,18 +165,19 @@ export default function UserCreditsPage() {
     e.preventDefault()
     try {
       setFormLoading(true)
+      const payload = {
+        user: formData.user || null,
+        phones: formData.phones ? formData.phones.split(",").map(p => p.trim()).filter(p => p !== "") : [],
+        user_app_ids: formData.user_app_ids ? formData.user_app_ids.split(",").map(id => id.trim()).filter(id => id !== "") : [],
+        amount: Number(formData.amount),
+        note: formData.note
+      };
+
       if (dialogMode === "create") {
-        await api.post("/mobcash/user-credit", {
-          user: formData.user,
-          amount: Number(formData.amount),
-          note: formData.note
-        })
+        await api.post("/mobcash/user-credit", payload)
         toast.success("Crédit ajouté avec succès.")
       } else {
-        await api.patch(`/mobcash/user-credit/${formData.id}`, {
-          amount: Number(formData.amount),
-          note: formData.note
-        })
+        await api.patch(`/mobcash/user-credit/${formData.id}`, payload)
         toast.success("Crédit modifié avec succès.")
       }
       setIsDialogOpen(false)
@@ -222,8 +234,8 @@ export default function UserCreditsPage() {
                 <TableHeader>
                   <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border/50">
                     <TableHead className="font-semibold text-muted-foreground h-12">Date</TableHead>
-                    <TableHead className="font-semibold text-muted-foreground">Utilisateur</TableHead>
-                    <TableHead className="font-semibold text-muted-foreground">Email</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Utilisateur / Infos</TableHead>
+                    <TableHead className="font-semibold text-muted-foreground">Téléphones / App IDs</TableHead>
                     <TableHead className="font-semibold text-muted-foreground text-right">Montant</TableHead>
                     <TableHead className="font-semibold text-muted-foreground">Note</TableHead>
                     <TableHead className="font-semibold text-muted-foreground text-center">Actions</TableHead>
@@ -236,9 +248,30 @@ export default function UserCreditsPage() {
                         {new Date(item.created_at).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-foreground font-medium">
-                        {item.user_fullname}
+                        <div>{item.user_fullname || <span className="text-muted-foreground italic font-normal">Non spécifié</span>}</div>
+                        <div className="text-xs text-muted-foreground font-normal">{item.user_email}</div>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{item.user_email}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        <div className="flex flex-col gap-1">
+                          {item.phones && item.phones.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {item.phones.map((p, i) => (
+                                <span key={i} className="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[10px]">{p}</span>
+                              ))}
+                            </div>
+                          )}
+                          {item.user_app_ids && item.user_app_ids.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {item.user_app_ids.map((id, i) => (
+                                <span key={i} className="bg-green-500/10 text-green-600 px-1.5 py-0.5 rounded text-[10px]">{id}</span>
+                              ))}
+                            </div>
+                          )}
+                          {(!item.phones || item.phones.length === 0) && (!item.user_app_ids || item.user_app_ids.length === 0) && (
+                            <span className="text-muted-foreground italic text-xs">N/A</span>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell className="text-right font-medium text-green-600 dark:text-green-400">
                         {item.amount.toLocaleString()} XOF
                       </TableCell>
@@ -280,6 +313,24 @@ export default function UserCreditsPage() {
                 />
               </div>
             )}
+            <div className="space-y-2">
+              <Label htmlFor="phones">Téléphones</Label>
+              <Input
+                id="phones"
+                placeholder="Ex: 0700000000, 0600000000"
+                value={formData.phones}
+                onChange={(e) => setFormData({ ...formData, phones: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="user_app_ids">User App IDs</Label>
+              <Input
+                id="user_app_ids"
+                placeholder="Ex: 12345678, 87654321"
+                value={formData.user_app_ids}
+                onChange={(e) => setFormData({ ...formData, user_app_ids: e.target.value })}
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="amount">Montant</Label>
               <Input
