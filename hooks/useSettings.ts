@@ -31,6 +31,7 @@ export interface Settings {
     requires_deposit_to_view_coupon: boolean
     minimun_deposit_before_view_coupon: string
     coupon_enable: boolean
+    allow_all_users_publish_coupons: boolean
 }
 
 export type SettingsInput = Omit<Settings, "id">

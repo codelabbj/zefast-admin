@@ -52,6 +52,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
     requires_deposit_to_view_coupon: false,
     minimun_deposit_before_view_coupon: "",
     coupon_enable: false,
+    allow_all_users_publish_coupons: false,
   })
 
   useEffect(() => {
@@ -82,6 +83,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
         requires_deposit_to_view_coupon: settings.requires_deposit_to_view_coupon,
         minimun_deposit_before_view_coupon: settings.minimun_deposit_before_view_coupon || "",
         coupon_enable: settings.coupon_enable || false,
+        allow_all_users_publish_coupons: settings.allow_all_users_publish_coupons || false,
       })
     }
   }, [settings])
@@ -515,6 +517,16 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 id="coupon_enable"
                 checked={formData.coupon_enable}
                 onCheckedChange={(checked) => setFormData({ ...formData, coupon_enable: checked })}
+                disabled={updateSettings.isPending}
+              />
+            </div>
+
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="allow_all_users_publish_coupons">Tous les utilisateurs peuvent publier coupon</Label>
+              <Switch
+                id="allow_all_users_publish_coupons"
+                checked={formData.allow_all_users_publish_coupons}
+                onCheckedChange={(checked) => setFormData({ ...formData, allow_all_users_publish_coupons: checked })}
                 disabled={updateSettings.isPending}
               />
             </div>

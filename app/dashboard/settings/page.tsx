@@ -96,6 +96,12 @@ export default function SettingsPage() {
                   {settings.coupon_enable ? "Activé" : "Désactivé"}
                 </Badge>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Tous les utilisateurs peuvent publier coupon</span>
+                <Badge variant={settings.allow_all_users_publish_coupons ? "default" : "secondary"}>
+                  {settings.allow_all_users_publish_coupons ? "Activé" : "Désactivé"}
+                </Badge>
+              </div>
               {settings.requires_deposit_to_view_coupon && (
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Dépôt Minimum pour voir</span>
